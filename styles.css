@@ -45,8 +45,10 @@ button {
 
 .task-bubble {
     position: relative;
-    width: 100px;
-    height: 100px;
+    width: auto;
+    height: auto;
+    min-width: 100px;
+    min-height: 100px;
     background-color: #007bff;
     border-radius: 50%;
     color: white;
@@ -58,6 +60,8 @@ button {
     overflow: hidden;
     cursor: pointer;
     transition: background-color 0.3s;
+    padding: 20px;
+    box-sizing: border-box;
 }
 
 .task-bubble:hover {
@@ -71,6 +75,25 @@ button {
     height: 0;
     background-color: #00ff00;
     transition: height 0.3s;
+}
+
+.checklist-popup {
+    display: none;
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(100% - 20px);
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    padding: 10px;
+    box-sizing: border-box;
+    z-index: 10;
+}
+
+.task-bubble:hover .checklist-popup {
+    display: block;
 }
 
 .checklist {
@@ -91,5 +114,17 @@ button {
     align-items: center;
     font-size: 12px;
     font-weight: normal;
-    color: #fff;
+    color: #000;
+    margin-top: 10px;
+}
+
+.add-checklist-item {
+    padding: 5px;
+    border: none;
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 14px;
+    margin-top: 10px;
 }
