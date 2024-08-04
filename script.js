@@ -120,7 +120,7 @@ class ParticleAnimation {
     }
 
     resize() {
-        this.canvas.width = window.innerWidth / document.querySelectorAll('.particle-canvas').length;
+        this.canvas.width = (window.innerWidth*0.9) / document.querySelectorAll('.particle-canvas').length;
         this.canvas.height = window.innerHeight;
         this.init();
     }

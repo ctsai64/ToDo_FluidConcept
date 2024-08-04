@@ -7,7 +7,7 @@ body {
     justify-content: center;
     align-items: center;
     height: 100vh;
-    overflow: hidden; /* Hide scrollbars for a cleaner view */
+    overflow: visible; /* Hide scrollbars for a cleaner view */
 }
 
 /* Container and other elements */
@@ -77,7 +77,7 @@ body {
 /* Tasks container styling */
 #tasksContainer {
     display: flex;
-    flex-wrap: wrap;
+    /*flex-wrap: wrap;*/
     gap: 10px;
     justify-content: center;
     height: 100vh; /* Ensures the container takes full viewport height */
@@ -117,7 +117,7 @@ canvas {
     border-radius: 20px; /* Match the container's border radius */
     box-sizing: border-box;
     z-index: 10;
-    overflow: auto;
+    overflow: hidden;
     transition: height 0.8s ease, opacity 0.4s ease; /* Animation for height and opacity */
     height: 0; /* Initially collapsed height */
     opacity: 0;
