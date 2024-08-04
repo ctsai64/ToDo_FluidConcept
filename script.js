@@ -112,48 +112,21 @@ function getRandomColor(excludeColor) {
     return availableColors[Math.floor(Math.random() * availableColors.length)];
 }
 
-function updateCanvasSizes() {
-    const container = document.getElementById('tasksContainer');
-    const canvases = container.querySelectorAll('.particle-canvas');
-    const containerWidth = container.offsetWidth;
-    const canvasWidth = containerWidth / canvases.length;
+function showTaskInput() {
+    const taskInput = document.getElementById('taskInput');
+    taskInput.style.display = 'inline-block';
+    taskInput.classList.add('active');
+    taskInput.focus();
+}
 
-    canvases.forEach(canvas => {
-        canvas.width = canvasWidth;
-        canvas.height = window.innerHeight;
+function hideTaskInput() {
+    const taskInput = document.getElementById('taskInput');
+    taskInput.classList.remove('active');
+    taskInput.addEventListener('transitionend', function handleTransitionEnd() {
+        taskInput.style.display = 'none'; // Hide input box after animation ends
+        taskInput.removeEventListener('transitionend', handleTransitionEnd);
     });
-}
-
-function addChecklistItem(button) {
-    const popup = button.parentElement;
-    const checklistItemsContainer = popup.querySelector('.checklist-items');
-    const newItemText = popup.querySelector('.checklist-item-text').value.trim();
-
-    if (newItemText === '') return;
-
-    const item = document.createElement('div');
-    item.className = 'checklist-item';
-    item.innerHTML = `
-        <input type="checkbox">
-        <label>${newItemText}</label>
-    `;
-    checklistItemsContainer.appendChild(item);
-
-    popup.querySelector('.checklist-item-text').value = ''; // Clear input field
-    updateChecklistProgress(popup);
-}
-
-function updateChecklistProgress(popup) {
-    const items = popup.querySelectorAll('.checklist-item');
-    const checkedItems = popup.querySelectorAll('.checklist-item input:checked').length;
-    const progress = (checkedItems / items.length) * 100;
-    popup.querySelector('.checklist-progress').innerText = `${Math.round(progress)}%`;
-}
-
-function handleKeyPress(event) {
-    if (event.key === 'Enter') {
-        addTask();
-    }
+    taskInput.value = ''; // Clear input value after hiding
 }
 
 function addTask() {
@@ -189,23 +162,20 @@ function addTask() {
     updateCanvasSizes();
 }
 
-function showTaskInput() {
-    const taskInput = document.getElementById('taskInput');
-    taskInput.style.display = 'inline-block';
-    taskInput.focus();
-}
-
-function hideTaskInput() {
-    const taskInput = document.getElementById('taskInput');
-    taskInput.style.display = 'none';
-    taskInput.value = ''; // Clear input value after hiding
+function updateCanvasSizes() {
+    document.querySelectorAll('.particle-canvas').forEach(canvas => {
+        if (canvas._particleAnimation) {
+            canvas._particleAnimation.resize();
+        }
+    });
 }
 
 document.getElementById('addTaskBtn').addEventListener('click', showTaskInput);
-document.getElementById('taskInput').addEventListener('keypress', handleKeyPress);
+document.getElementById('taskInput').addEventListener('keypress', function(event) {
+    if (event.key === 'Enter') {
+        addTask();
+    }
+});
 
 window.addEventListener('resize', updateCanvasSizes);
-
-window.addEventListener('load', () => {
-    updateCanvasSizes();
-});
+window.addEventListener('load', updateCanvasSizes);

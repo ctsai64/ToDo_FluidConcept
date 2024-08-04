@@ -16,34 +16,30 @@ body {
     width: 100%;
     max-width: 1200px;
     text-align: center;
-    position: relative; /* Ensure container is the reference point for overlapping */
-}
-
-h1 {
-    margin-bottom: 20px;
-}
-
-.form-group {
-    display: flex;
-    align-items: center;
-    justify-content: center; /* Center the input and button horizontally */
-    position: relative; /* Ensure the input box can overlap the button */
 }
 
 /* Task input styling */
 #taskInput {
     padding: 10px;
     font-size: 16px;
-    width: 100%;
-    max-width: 400px; /* Adjust max width if needed */
     box-sizing: border-box;
-    --input-height: 40px; /* Define a CSS variable for height */
-    position: absolute; /* Overlap with existing elements */
-    top: 0; /* Adjust as needed */
-    left: 50%;
-    transform: translateX(-50%);
-    display: none; /* Initially hide the input box */
-    z-index: 10; /* Ensure input box is above other elements */
+    height: 40px; /* Ensure height matches the button */
+    position: absolute;
+    top: 20px; /* Align with the button */
+    left: calc(20px + 40px * 1.618); /* Position to the right of the button */
+    width: 0; /* Initially collapsed width */
+    transition: width 0.4s ease-out, opacity 0.4s ease-out; /* Animation for width and opacity change */
+    z-index: 10;
+    opacity: 0; /* Initially hidden */
+    border: 2px solid #fff; /* Border style to match the button */
+    border-radius: 20px; /* Oval shape matching the button */
+    background-color: #fff; /* White background for visibility */
+}
+
+/* Show input box with animation when active */
+#taskInput.active {
+    width: calc(50% - (20px + 40px * 1.618)); /* Expand width to half of the window */
+    opacity: 1;
 }
 
 /* Button styling */
@@ -51,9 +47,9 @@ h1 {
     background-color: #fff;
     color: #777;
     border: none;
-    border-radius: 50%; /* Initially set to circle for positioning */
+    border-radius: 20px; /* Oval shape */
     width: calc(40px * 1.618); /* Width based on golden ratio */
-    height: 40px; /* Adjust height as needed */
+    height: 40px; /* Height to maintain oval shape */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -65,7 +61,7 @@ h1 {
     top: 20px; /* Adjust as needed */
     left: 20px; /* Adjust as needed */
     z-index: 5; /* Ensure button is below the input box */
-    border-radius: 20px; /* Oval shape */
+    border: 2px solid #fff; /* Match the border style of the input box */
 }
 
 #addTaskBtn:hover {
@@ -78,32 +74,13 @@ h1 {
     box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
 }
 
-#addTaskBtn::after {
-    content: "";
-    display: inline-block;
-    height: 100%;
-    width: 100%;
-    border-radius: 20px; /* Oval shape */
-    position: absolute;
-    top: 0;
-    left: 0;
-    z-index: -1;
-    transition: all .4s;
-    background-color: #fff; /* Circle background color */
-}
-
-#addTaskBtn:hover::after {
-    transform: scaleX(1.4) scaleY(1.6);
-    opacity: 0;
-}
-
 /* Tasks container styling */
 #tasksContainer {
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
     justify-content: center;
-    height: calc(100vh - 60px); /* Adjust height to fit container and overlap */
+    height: 100vh; /* Ensures the container takes full viewport height */
     padding: 0 10px; /* Adjust padding as needed */
     box-sizing: border-box;
 }
