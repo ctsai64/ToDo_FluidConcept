@@ -132,7 +132,7 @@ class ParticleAnimation {
     }
 }
 
-const group1 = ['#5C9EAD', '#A4A24A', '#F0E68C']; // Green, Blue, Yellow
+const group1 = ['#5C9EAD', '#A4A24A', '#E8D57E']; // Green, Blue, Yellow
 const group2 = ['#EF7B45', '#B19CD9', '#F6AE2D']; // Orange, Purple, Red
 let canvasColors = []; // Array to keep track of colors used in past canvases
 
@@ -178,6 +178,7 @@ function addTask() {
     const taskContainer = document.createElement('div');
     taskContainer.className = 'task-container';
     taskContainer.innerHTML = `
+        <button class="btn-circle delete-task-btn" onclick="deleteTask(this)">x</button>
         <canvas class="particle-canvas"></canvas>
         <div class="checklist-popup">
             <div class="checklist-input-container">
@@ -190,14 +191,11 @@ function addTask() {
             </div>
         </div>
     `;
-
     const tasksContainer = document.getElementById('tasksContainer');
     tasksContainer.appendChild(taskContainer);
 
     const canvas = taskContainer.querySelector('.particle-canvas');
     const color = getRandomColor();
-    //const color = getRandomColor(lastColor);
-    // lastColor = color;
     if (!canvas._particleAnimation) {
         canvas._particleAnimation = new ParticleAnimation(canvas, taskText, color);
     } else {
@@ -335,3 +333,8 @@ document.getElementById('taskInput').addEventListener('keypress', function(event
 
 document.getElementById('addTaskBtn').addEventListener('click', showTaskInput);
 
+function deleteTask(button) {
+    const taskContainer = button.closest('.task-container');
+    taskContainer.remove();
+    updateCanvasSizes(); // Resize remaining canvases if needed
+}
