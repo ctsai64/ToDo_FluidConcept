@@ -205,3 +205,8 @@ canvas {
 .checklist-item label {
     margin: 0;
 }
+
+/* Smooth transition for particle canvas level changes */
+.particle-canvas {
+    transition: background-color 0.5s ease; /* Example transition effect */
+}
