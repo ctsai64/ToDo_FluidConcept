@@ -24,7 +24,7 @@ h1 {
 }
 
 #taskInput {
-    width: 70%;
+    width: calc(100% - 120px); /* Adjust width based on button width */
     padding: 10px;
     font-size: 16px;
     margin-right: 10px;
@@ -43,12 +43,20 @@ button {
     justify-content: center;
 }
 
+.task-container {
+    position: relative;
+    display: inline-block;
+    width: 100%; /* Ensures that tasks don't overflow */
+    max-width: 300px; /* Limits the maximum width of task bubbles */
+}
+
 .task-bubble {
     position: relative;
-    width: auto;
+    width: 100%;
+    max-width: 300px; /* Ensures bubbles don't exceed maximum width */
     height: auto;
-    min-width: 100px;
-    min-height: 100px;
+    min-width: 120px; /* Minimum width for smaller screens */
+    min-height: 120px; /* Minimum height for smaller screens */
     background-color: #007bff;
     border-radius: 50%;
     color: white;
@@ -80,24 +88,26 @@ button {
 .checklist-popup {
     display: none;
     position: absolute;
-    bottom: 10px;
+    top: 100%; /* Position below the task bubble */
     left: 50%;
     transform: translateX(-50%);
-    width: calc(100% - 20px);
+    width: calc(100% - 20px); /* Adjust width to fit within the container */
+    max-width: 300px; /* Match the maximum width of the bubble */
     background: #fff;
     border-radius: 8px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
     padding: 10px;
     box-sizing: border-box;
     z-index: 10;
+    overflow: auto; /* Allows scrolling if content overflows */
 }
 
-.task-bubble:hover .checklist-popup {
+.task-container:hover .checklist-popup {
     display: block;
 }
 
 .checklist {
-    margin: 10px;
+    margin: 10px 0;
 }
 
 .checklist input[type="checkbox"] {
