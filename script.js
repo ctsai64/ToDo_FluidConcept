@@ -69,10 +69,6 @@ class ParticleAnimation {
             }
         }
 
-        // Debug
-        this.ctx.fillStyle = "black";
-        this.ctx.fillText(`c:${this.c} lv:${this.level}`, 10, 10);
-
         this.update();
         this.aniId = window.requestAnimationFrame(() => this.draw());
     }
