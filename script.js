@@ -200,8 +200,13 @@ function addChecklistItem(button) {
     // Clear the input field
     input.value = '';
 
-    // Optionally, update the progress here if needed
+    // Update the progress for this task
     updateChecklistProgress(popup);
+
+    // Add event listener to checkbox to update progress when checked/unchecked
+    checkbox.addEventListener('change', () => {
+        updateChecklistProgress(popup);
+    });
 }
 
 function updateCanvasSizes() {

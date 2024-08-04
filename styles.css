@@ -118,7 +118,7 @@ canvas {
     box-sizing: border-box;
     z-index: 10;
     overflow: auto;
-    transition: height 0.8s ease, opacity 0.8s ease; /* Animation for height and opacity */
+    transition: height 0.8s ease, opacity 0.4s ease; /* Animation for height and opacity */
     height: 0; /* Initially collapsed height */
     opacity: 0;
     border: none; /* Remove border color */
