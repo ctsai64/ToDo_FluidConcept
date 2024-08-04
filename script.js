@@ -139,8 +139,10 @@ function addTask() {
     taskContainer.innerHTML = `
         <canvas class="particle-canvas"></canvas>
         <div class="checklist-popup">
-            <input type="text" class="checklist-item-text" placeholder="Enter checklist item text">
-            <button class="add-checklist-item" onclick="addChecklistItem(this)">Add Checklist Item</button>
+            <div class="checklist-input-container">
+                <input type="text" class="checklist-item-text" placeholder="Enter checklist item text">
+                <button class="add-checklist-item" onclick="addChecklistItem(this)">+</button>
+            </div>
             <div class="checklist">
                 <div class="checklist-items"></div>
                 <div class="checklist-progress">0%</div>
@@ -162,7 +164,45 @@ function addTask() {
     updateCanvasSizes();
 }
 
+function updateChecklistProgress(popup) {
+    const checklistItems = popup.querySelectorAll('.checklist-item');
+    const checkedItems = popup.querySelectorAll('.checklist-item input:checked').length;
+    const progress = Math.round((checkedItems / checklistItems.length) * 100);
+    popup.querySelector('.checklist-progress').textContent = `${progress}%`;
+}
 
+function addChecklistItem(button) {
+    // Find the checklist popup and input field
+    const popup = button.parentElement.parentElement; // Navigate to the popup container
+    const input = popup.querySelector('.checklist-item-text');
+    const checklistItems = popup.querySelector('.checklist-items');
+    
+    // Get the item text and trim any whitespace
+    const itemText = input.value.trim();
+    if (itemText === '') return; // Do nothing if the input is empty
+
+    // Create a new checklist item
+    const itemContainer = document.createElement('div');
+    itemContainer.className = 'checklist-item';
+    
+    const checkbox = document.createElement('input');
+    checkbox.type = 'checkbox';
+    
+    const label = document.createElement('label');
+    label.textContent = itemText;
+    
+    itemContainer.appendChild(checkbox);
+    itemContainer.appendChild(label);
+    
+    // Add the new item to the checklist
+    checklistItems.appendChild(itemContainer);
+    
+    // Clear the input field
+    input.value = '';
+
+    // Optionally, update the progress here if needed
+    updateChecklistProgress(popup);
+}
 
 function updateCanvasSizes() {
     document.querySelectorAll('.particle-canvas').forEach(canvas => {
@@ -171,6 +211,18 @@ function updateCanvasSizes() {
         }
     });
 }
+
+// Handle Enter key press for adding checklist items
+document.addEventListener('keypress', function(event) {
+    if (event.key === 'Enter') {
+        const focusedInput = document.querySelector('.checklist-item-text:focus');
+        if (focusedInput) {
+            const button = focusedInput.nextElementSibling;
+            addChecklistItem(button);
+            event.preventDefault(); // Prevent form submission if inside a form
+        }
+    }
+});
 
 document.getElementById('addTaskBtn').addEventListener('click', showTaskInput);
 document.getElementById('taskInput').addEventListener('keypress', function(event) {
