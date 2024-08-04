@@ -115,18 +115,45 @@ function getRandomColor(excludeColor) {
 function updateCanvasSizes() {
     const container = document.getElementById('tasksContainer');
     const canvases = container.querySelectorAll('.particle-canvas');
-    const containerWidth = container.clientWidth;
+    const containerWidth = container.offsetWidth;
     const canvasWidth = containerWidth / canvases.length;
 
     canvases.forEach(canvas => {
         canvas.width = canvasWidth;
         canvas.height = window.innerHeight;
-        if (canvas._particleAnimation) {
-            canvas._particleAnimation.canvas.width = canvasWidth;
-            canvas._particleAnimation.canvas.height = window.innerHeight;
-            canvas._particleAnimation.init();
-        }
     });
+}
+
+function addChecklistItem(button) {
+    const popup = button.parentElement;
+    const checklistItemsContainer = popup.querySelector('.checklist-items');
+    const newItemText = popup.querySelector('.checklist-item-text').value.trim();
+
+    if (newItemText === '') return;
+
+    const item = document.createElement('div');
+    item.className = 'checklist-item';
+    item.innerHTML = `
+        <input type="checkbox">
+        <label>${newItemText}</label>
+    `;
+    checklistItemsContainer.appendChild(item);
+
+    popup.querySelector('.checklist-item-text').value = ''; // Clear input field
+    updateChecklistProgress(popup);
+}
+
+function updateChecklistProgress(popup) {
+    const items = popup.querySelectorAll('.checklist-item');
+    const checkedItems = popup.querySelectorAll('.checklist-item input:checked').length;
+    const progress = (checkedItems / items.length) * 100;
+    popup.querySelector('.checklist-progress').innerText = `${Math.round(progress)}%`;
+}
+
+function handleKeyPress(event) {
+    if (event.key === 'Enter') {
+        addTask();
+    }
 }
 
 function addTask() {
@@ -152,43 +179,33 @@ function addTask() {
     tasksContainer.appendChild(taskContainer);
 
     const canvas = taskContainer.querySelector('.particle-canvas');
-    const color = getRandomColor(lastColor); // Get a random color different from the last color
-    lastColor = color; // Update the last color
+    const color = getRandomColor(lastColor);
+    lastColor = color;
     if (!canvas._particleAnimation) {
         canvas._particleAnimation = new ParticleAnimation(canvas, taskText, color);
     }
 
+    hideTaskInput(); // Hide input box after adding task
     updateCanvasSizes();
 }
 
-function addChecklistItem(button) {
-    const checklistPopup = button.parentElement;
-    const taskContainer = checklistPopup.parentElement;
-    const checklistItems = checklistPopup.querySelector('.checklist-items');
-    const checklistItemText = checklistPopup.querySelector('.checklist-item-text').value.trim();
-
-    if (checklistItemText === '') return;
-
-    const checklistItem = document.createElement('div');
-    checklistItem.className = 'checklist-item';
-    checklistItem.innerHTML = `
-        <input type="checkbox">
-        <label>${checklistItemText}</label>
-    `;
-
-    checklistItems.appendChild(checklistItem);
-    updateProgress(checklistPopup);
+function showTaskInput() {
+    const taskInput = document.getElementById('taskInput');
+    taskInput.style.display = 'inline-block';
+    taskInput.focus();
 }
 
-function updateProgress(popup) {
-    const items = popup.querySelectorAll('.checklist-item input[type="checkbox"]');
-    const checkedItems = popup.querySelectorAll('.checklist-item input[type="checkbox"]:checked');
-    const progress = (checkedItems.length / items.length) * 100;
-    popup.querySelector('.checklist-progress').textContent = `${Math.round(progress)}%`;
+function hideTaskInput() {
+    const taskInput = document.getElementById('taskInput');
+    taskInput.style.display = 'none';
+    taskInput.value = ''; // Clear input value after hiding
 }
+
+document.getElementById('addTaskBtn').addEventListener('click', showTaskInput);
+document.getElementById('taskInput').addEventListener('keypress', handleKeyPress);
 
 window.addEventListener('resize', updateCanvasSizes);
 
 window.addEventListener('load', () => {
-    updateCanvasSizes(); // Set initial sizes
+    updateCanvasSizes();
 });
