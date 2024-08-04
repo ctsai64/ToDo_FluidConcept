@@ -7,7 +7,7 @@ body {
     justify-content: center;
     align-items: center;
     height: 100vh;
-    overflow: visible; /* Hide scrollbars for a cleaner view */
+    overflow: hidden; /* Hide scrollbars for a cleaner view */
 }
 
 /* Container and other elements */
