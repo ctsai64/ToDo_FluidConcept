@@ -17,11 +17,11 @@ class Particle {
 }
 
 class ParticleAnimation {
-    constructor(canvas, text, color) {
+    constructor(canvas, text, color, level = 50) {
         this.canvas = canvas;
         this.ctx = this.canvas.getContext("2d");
         this.particles = [];
-        this.level = 50; // Initial level set to 50%
+        this.level = level; // Set initial level
         this.fill = false;
         this.color = color; // Set the canvas color
         this.c = 0;
@@ -102,6 +102,12 @@ class ParticleAnimation {
         // Reinitialize particles when resizing
         this.init();
     }
+
+    setLevel(level) {
+        this.level = level;
+        // Reinitialize particles with new level
+        this.init();
+    }
 }
 
 const colors = ['#5C9EAD', '#C5EDAC', '#EF7B45', '#F6AE2D'];
@@ -158,6 +164,9 @@ function addTask() {
     lastColor = color;
     if (!canvas._particleAnimation) {
         canvas._particleAnimation = new ParticleAnimation(canvas, taskText, color);
+    } else {
+        // Set the initial level to 50% for new tasks
+        canvas._particleAnimation.setLevel(50);
     }
 
     hideTaskInput(); // Hide input box after adding task
@@ -167,8 +176,15 @@ function addTask() {
 function updateChecklistProgress(popup) {
     const checklistItems = popup.querySelectorAll('.checklist-item');
     const checkedItems = popup.querySelectorAll('.checklist-item input:checked').length;
-    const progress = Math.round((checkedItems / checklistItems.length) * 100);
+    const progress = checklistItems.length === 0 ? 50 : Math.round((checkedItems / checklistItems.length) * 100);
     popup.querySelector('.checklist-progress').textContent = `${progress}%`;
+    
+    // Update canvas level
+    const taskContainer = popup.closest('.task-container');
+    const canvas = taskContainer.querySelector('.particle-canvas');
+    if (canvas._particleAnimation) {
+        canvas._particleAnimation.setLevel(progress);
+    }
 }
 
 function addChecklistItem(button) {
