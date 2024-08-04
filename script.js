@@ -162,6 +162,8 @@ function addTask() {
     updateCanvasSizes();
 }
 
+
+
 function updateCanvasSizes() {
     document.querySelectorAll('.particle-canvas').forEach(canvas => {
         if (canvas._particleAnimation) {

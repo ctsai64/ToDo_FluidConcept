@@ -92,6 +92,7 @@ body {
     justify-content: center;
     position: relative;
     overflow: hidden; /* Ensures contents don't overflow */
+    border: 1px solid; /* Optional: Add border for visibility */
 }
 
 /* Canvas styling */
@@ -101,26 +102,34 @@ canvas {
 }
 
 /* Popup styling */
+/* Ensure the popup is initially hidden and animates upwards */
 .checklist-popup {
     display: none;
     position: absolute;
-    top: 100%; /* Position below the task bubble */
+    bottom: 0;
     left: 50%;
     transform: translateX(-50%);
-    width: calc(100% - 20px); /* Adjust width to fit within the container */
-    max-width: 300px; /* Match the maximum width of the bubble */
-    background: #fff;
-    border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    width: calc(100% - 10px); /* Adjust width to fit within the container */
+    max-width: 300px;
+    background: #e0e0e0; /* Slightly darker color than the canvas */
+    border-radius: 20px; /* Match the container's border radius */
     padding: 10px;
     box-sizing: border-box;
     z-index: 10;
-    overflow: auto; /* Allows scrolling if content overflows */
+    overflow: auto;
+    transition: height 0.4s ease, opacity 0.4s ease; /* Animation for height and opacity */
+    height: 0; /* Initially collapsed height */
+    opacity: 0;
+    border: none; /* Remove border color */
 }
 
+/* Show the popup with animation when hovering over the canvas */
 .task-container:hover .checklist-popup {
     display: block;
+    height: auto; /* Adjust to fit the content */
+    opacity: 1;
 }
+
 
 .checklist {
     margin: 10px 0;
