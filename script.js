@@ -16,7 +16,6 @@ class Particle {
     }
 
     update(level) {
-        // Update y position based on the new level
         this.y = this.y + ((this.level - level) / 100) * 10;
         this.level = level;
     }
@@ -27,11 +26,11 @@ class ParticleAnimation {
         this.canvas = canvas;
         this.ctx = this.canvas.getContext("2d");
         this.particles = [];
-        this.currentLevel = level; // Current visible level
-        this.targetLevel = level; // Target level for transition
-        this.transitionStartLevel = level; // Starting level for transition
-        this.transitionStartTime = null; // Start time of the transition
-        this.transitionDuration = 1000; // Duration of the transition in milliseconds
+        this.currentLevel = level;
+        this.targetLevel = level;
+        this.transitionStartLevel = level;
+        this.transitionStartTime = null;
+        this.transitionDuration = 1000;
         this.fill = false;
         this.color = color;
         this.c = 0;
@@ -55,20 +54,16 @@ class ParticleAnimation {
         this.ctx.fillStyle = this.color;
         this.ctx.strokeStyle = this.color;
 
-        // Update level based on transition
         if (this.transitionStartTime !== null) {
             const elapsed = Date.now() - this.transitionStartTime;
-            const progress = Math.min(elapsed / this.transitionDuration, 1); // Calculate progress of transition
-
+            const progress = Math.min(elapsed / this.transitionDuration, 1);
             this.currentLevel = this.transitionStartLevel + (this.targetLevel - this.transitionStartLevel) * progress;
             if (progress === 1) {
-                this.transitionStartTime = null; // End the transition
+                this.transitionStartTime = null;
             }
-            // Update particles based on new level
             this.particles.forEach(particle => particle.update(this.currentLevel));
         }
 
-        // Draw the liquid
         this.ctx.beginPath();
         this.ctx.moveTo(this.canvas.width, this.canvas.height - (this.canvas.height - 100) * this.currentLevel / 100 - 50);
         this.ctx.lineTo(this.canvas.width, this.canvas.height);
@@ -82,7 +77,6 @@ class ParticleAnimation {
         );
         this.ctx.fill();
 
-        // Draw the bubbles
         for (const particle of this.particles) {
             this.ctx.beginPath();
             this.ctx.arc(particle.x, particle.y, particle.d, 0, 2 * Math.PI);
@@ -93,7 +87,6 @@ class ParticleAnimation {
             }
         }
 
-        // Draw the task text in the center of the canvas
         this.ctx.font = '20px Arial';
         this.ctx.fillStyle = 'white';
         this.ctx.textAlign = 'center';
@@ -120,7 +113,7 @@ class ParticleAnimation {
     }
 
     resize() {
-        this.canvas.width = (window.innerWidth*0.9) / document.querySelectorAll('.particle-canvas').length;
+        this.canvas.width = (window.innerWidth * 0.9) / document.querySelectorAll('.particle-canvas').length;
         this.canvas.height = window.innerHeight;
         this.init();
     }
@@ -132,42 +125,39 @@ class ParticleAnimation {
     }
 }
 
-const group1 = ['#5C9EAD', '#A4A24A', '#E8D57E']; // Green, Blue, Yellow
-const group2 = ['#EF7B45', '#B19CD9', '#F6AE2D']; // Orange, Purple, Red
-let canvasColors = []; // Array to keep track of colors used in past canvases
+const group1 = ['#5C9EAD', '#A4A24A', '#E8D57E'];
+const group2 = ['#EF7B45', '#B19CD9', '#F6AE2D'];
+let canvasColors = [];
 
 function getRandomColor() {
     let availableColors;
-
     const allColors = [...group1, ...group2];
     availableColors = allColors.filter(color => !canvasColors.includes(color));
-
     if (canvasColors.length > 4) {
         canvasColors = canvasColors.slice(-4);
     }
-
     const randomColor = availableColors[Math.floor(Math.random() * availableColors.length)];
     canvasColors.push(randomColor);
-
     return randomColor;
 }
-
 
 function showTaskInput() {
     const taskInput = document.getElementById('taskInput');
     taskInput.style.display = 'inline-block';
     taskInput.classList.add('active');
     taskInput.focus();
+    isTaskInputFocused = true;
 }
 
 function hideTaskInput() {
     const taskInput = document.getElementById('taskInput');
     taskInput.classList.remove('active');
     taskInput.addEventListener('transitionend', function handleTransitionEnd() {
-        taskInput.style.display = 'none'; // Hide input box after animation ends
+        taskInput.style.display = 'none';
         taskInput.removeEventListener('transitionend', handleTransitionEnd);
     });
-    taskInput.value = ''; // Clear input value after hiding
+    taskInput.value = '';
+    isTaskInputFocused = false;
 }
 
 function addTask() {
@@ -199,11 +189,10 @@ function addTask() {
     if (!canvas._particleAnimation) {
         canvas._particleAnimation = new ParticleAnimation(canvas, taskText, color);
     } else {
-        // Set the initial level to 50% for new tasks
         canvas._particleAnimation.setLevel(50);
     }
 
-    hideTaskInput(); // Hide input box after adding task
+    hideTaskInput();
     updateCanvasSizes();
 }
 
@@ -213,7 +202,6 @@ function updateChecklistProgress(popup) {
     const progress = checklistItems.length === 0 ? 50 : Math.round((checkedItems / checklistItems.length) * 100);
     popup.querySelector('.checklist-progress').textContent = `${progress}%`;
     
-    // Update canvas level
     const taskContainer = popup.closest('.task-container');
     const canvas = taskContainer.querySelector('.particle-canvas');
     if (canvas._particleAnimation) {
@@ -222,38 +210,35 @@ function updateChecklistProgress(popup) {
 }
 
 function addChecklistItem(button) {
-    // Find the checklist popup and input field
-    const popup = button.parentElement.parentElement; // Navigate to the popup container
+    const popup = button.parentElement.parentElement;
     const input = popup.querySelector('.checklist-item-text');
     const checklistItems = popup.querySelector('.checklist-items');
-    
-    // Get the item text and trim any whitespace
     const itemText = input.value.trim();
-    if (itemText === '') return; // Do nothing if the input is empty
+    if (itemText === '') return;
 
-    // Create a new checklist item
     const itemContainer = document.createElement('div');
     itemContainer.className = 'checklist-item';
-    
+
     const checkbox = document.createElement('input');
     checkbox.type = 'checkbox';
-    
+
     const label = document.createElement('label');
     label.textContent = itemText;
+
+    const deleteButton = document.createElement('button');
+    deleteButton.className = 'checklist-item-delete';
+    deleteButton.textContent = 'x';
+    deleteButton.onclick = () => {
+        itemContainer.remove();
+        updateChecklistProgress(popup);
+    };
     
     itemContainer.appendChild(checkbox);
     itemContainer.appendChild(label);
-    
-    // Add the new item to the checklist
+    label.appendChild(deleteButton);
     checklistItems.appendChild(itemContainer);
-    
-    // Clear the input field
     input.value = '';
-
-    // Update the progress for this task
     updateChecklistProgress(popup);
-
-    // Add event listener to checkbox to update progress when checked/unchecked
     checkbox.addEventListener('change', () => {
         updateChecklistProgress(popup);
     });
@@ -267,48 +252,13 @@ function updateCanvasSizes() {
     });
 }
 
-// Handle Enter key press for adding checklist items
-document.addEventListener('keypress', function(event) {
-    if (event.key === 'Enter') {
-        const focusedInput = document.querySelector('.checklist-item-text:focus');
-        if (focusedInput) {
-            const button = focusedInput.nextElementSibling;
-            addChecklistItem(button);
-            event.preventDefault(); // Prevent form submission if inside a form
-        }
-    }
-});
-
-document.getElementById('addTaskBtn').addEventListener('click', showTaskInput);
-document.getElementById('taskInput').addEventListener('keypress', function(event) {
-    if (event.key === 'Enter') {
-        addTask();
-    }
-});
-
-window.addEventListener('resize', updateCanvasSizes);
-window.addEventListener('load', updateCanvasSizes);
+function deleteTask(button) {
+    const taskContainer = button.closest('.task-container');
+    taskContainer.remove();
+    updateCanvasSizes();
+}
 
 let isTaskInputFocused = false;
-
-function showTaskInput() {
-    const taskInput = document.getElementById('taskInput');
-    taskInput.style.display = 'inline-block';
-    taskInput.classList.add('active');
-    taskInput.focus();
-    isTaskInputFocused = true;
-}
-
-function hideTaskInput() {
-    const taskInput = document.getElementById('taskInput');
-    taskInput.classList.remove('active');
-    taskInput.addEventListener('transitionend', function handleTransitionEnd() {
-        taskInput.style.display = 'none'; // Hide input box after animation ends
-        taskInput.removeEventListener('transitionend', handleTransitionEnd);
-    });
-    taskInput.value = ''; // Clear input value after hiding
-    isTaskInputFocused = false;
-}
 
 function handleClickOutside(event) {
     const taskInput = document.getElementById('taskInput');
@@ -318,23 +268,26 @@ function handleClickOutside(event) {
 }
 
 document.addEventListener('mousedown', handleClickOutside);
-
 document.getElementById('taskInput').addEventListener('blur', () => {
     if (isTaskInputFocused) {
         hideTaskInput();
     }
 });
-
 document.getElementById('taskInput').addEventListener('keypress', function(event) {
     if (event.key === 'Enter') {
         addTask();
     }
 });
-
 document.getElementById('addTaskBtn').addEventListener('click', showTaskInput);
-
-function deleteTask(button) {
-    const taskContainer = button.closest('.task-container');
-    taskContainer.remove();
-    updateCanvasSizes(); // Resize remaining canvases if needed
-}
+document.addEventListener('keypress', function(event) {
+    if (event.key === 'Enter') {
+        const focusedInput = document.querySelector('.checklist-item-text:focus');
+        if (focusedInput) {
+            const button = focusedInput.nextElementSibling;
+            addChecklistItem(button);
+            event.preventDefault();
+        }
+    }
+});
+window.addEventListener('resize', updateCanvasSizes);
+window.addEventListener('load', updateCanvasSizes);
