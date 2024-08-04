@@ -278,3 +278,48 @@ document.getElementById('taskInput').addEventListener('keypress', function(event
 
 window.addEventListener('resize', updateCanvasSizes);
 window.addEventListener('load', updateCanvasSizes);
+
+let isTaskInputFocused = false;
+
+function showTaskInput() {
+    const taskInput = document.getElementById('taskInput');
+    taskInput.style.display = 'inline-block';
+    taskInput.classList.add('active');
+    taskInput.focus();
+    isTaskInputFocused = true;
+}
+
+function hideTaskInput() {
+    const taskInput = document.getElementById('taskInput');
+    taskInput.classList.remove('active');
+    taskInput.addEventListener('transitionend', function handleTransitionEnd() {
+        taskInput.style.display = 'none'; // Hide input box after animation ends
+        taskInput.removeEventListener('transitionend', handleTransitionEnd);
+    });
+    taskInput.value = ''; // Clear input value after hiding
+    isTaskInputFocused = false;
+}
+
+function handleClickOutside(event) {
+    const taskInput = document.getElementById('taskInput');
+    if (!taskInput.contains(event.target) && isTaskInputFocused) {
+        hideTaskInput();
+    }
+}
+
+document.addEventListener('mousedown', handleClickOutside);
+
+document.getElementById('taskInput').addEventListener('blur', () => {
+    if (isTaskInputFocused) {
+        hideTaskInput();
+    }
+});
+
+document.getElementById('taskInput').addEventListener('keypress', function(event) {
+    if (event.key === 'Enter') {
+        addTask();
+    }
+});
+
+document.getElementById('addTaskBtn').addEventListener('click', showTaskInput);
+

@@ -24,6 +24,7 @@ body {
     box-sizing: border-box;
     height: 40px; /* Ensure height matches the button */
     position: absolute;
+    margin-left: 5px;
     top: 20px; /* Align with the button */
     left: calc(20px + 40px * 1.618); /* Position to the right of the button */
     width: 0; /* Initially collapsed width */
@@ -91,7 +92,6 @@ body {
     justify-content: center;
     position: relative;
     overflow: hidden; /* Ensures contents don't overflow */
-    border: 1px solid; /* Optional: Add border for visibility */
 }
 
 /* Canvas styling */
@@ -206,7 +206,4 @@ canvas {
     margin: 0;
 }
 
-/* Smooth transition for particle canvas level changes */
-.particle-canvas {
-    transition: background-color 0.5s ease; /* Example transition effect */
-}
+  
