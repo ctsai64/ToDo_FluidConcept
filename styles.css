@@ -91,7 +91,7 @@ body {
     align-items: center;
     justify-content: center;
     position: relative;
-    overflow: hidden; /* Ensures contents don't overflow */
+    /*overflow: hidden; /* Ensures contents don't overflow */
 }
 
 /* Canvas styling */
@@ -111,7 +111,7 @@ canvas {
     bottom: 30px;
     left: 50%;
     transform: translateX(-50%);
-    width: calc(100% - 20px); /* Adjust width to fit within the container */
+    width: 200px;/*calc(100% - 20px); /* Adjust width to fit within the container */
     max-width: 300px;
     background: #e0e0e0; /* Slightly darker color than the canvas */
     border-radius: 20px; /* Match the container's border radius */

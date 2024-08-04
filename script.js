@@ -132,15 +132,26 @@ class ParticleAnimation {
     }
 }
 
+const group1 = ['#5C9EAD', '#A4A24A', '#F0E68C']; // Green, Blue, Yellow
+const group2 = ['#EF7B45', '#B19CD9', '#F6AE2D']; // Orange, Purple, Red
+let canvasColors = []; // Array to keep track of colors used in past canvases
 
+function getRandomColor() {
+    let availableColors;
 
-const colors = ['#5C9EAD', '#C5EDAC', '#EF7B45', '#F6AE2D'];
-let lastColor = null;
+    const allColors = [...group1, ...group2];
+    availableColors = allColors.filter(color => !canvasColors.includes(color));
 
-function getRandomColor(excludeColor) {
-    const availableColors = colors.filter(color => color !== excludeColor);
-    return availableColors[Math.floor(Math.random() * availableColors.length)];
+    if (canvasColors.length > 4) {
+        canvasColors = canvasColors.slice(-4);
+    }
+
+    const randomColor = availableColors[Math.floor(Math.random() * availableColors.length)];
+    canvasColors.push(randomColor);
+
+    return randomColor;
 }
+
 
 function showTaskInput() {
     const taskInput = document.getElementById('taskInput');
@@ -184,8 +195,9 @@ function addTask() {
     tasksContainer.appendChild(taskContainer);
 
     const canvas = taskContainer.querySelector('.particle-canvas');
-    const color = getRandomColor(lastColor);
-    lastColor = color;
+    const color = getRandomColor();
+    //const color = getRandomColor(lastColor);
+    // lastColor = color;
     if (!canvas._particleAnimation) {
         canvas._particleAnimation = new ParticleAnimation(canvas, taskText, color);
     } else {
