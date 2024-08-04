@@ -94,6 +94,13 @@ body {
     overflow: hidden; /* Ensures contents don't overflow */
 }
 
+/* Canvas styling */
+canvas {
+    border: 1px solid #ddd;
+    border-radius: 50px; /* Rounded corners for the canvas */
+}
+
+/* Popup styling */
 .checklist-popup {
     display: none;
     position: absolute;
@@ -146,9 +153,4 @@ body {
     border-radius: 5px;
     font-size: 14px;
     margin-top: 10px;
-}
-
-/* Canvas styling */
-canvas {
-    border: 1px solid #ddd;
 }
