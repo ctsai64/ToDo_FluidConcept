@@ -17,15 +17,16 @@ class Particle {
 }
 
 class ParticleAnimation {
-    constructor(canvas) {
+    constructor(canvas, text, color) {
         this.canvas = canvas;
         this.ctx = this.canvas.getContext("2d");
         this.particles = [];
         this.level = 50; // Initial level set to 50%
         this.fill = false;
-        this.color = "blue"; // Default color to blue
+        this.color = color; // Set the canvas color
         this.c = 0;
         this.aniId = null;
+        this.text = text; // Text to display on the canvas
         this.resize(); // Call resize to initialize size
         this.init(); // Initialize particles and start drawing
     }
@@ -69,6 +70,13 @@ class ParticleAnimation {
             }
         }
 
+        // Draw the task text in the center of the canvas
+        this.ctx.font = '20px Arial';
+        this.ctx.fillStyle = 'white';
+        this.ctx.textAlign = 'center';
+        this.ctx.textBaseline = 'middle';
+        this.ctx.fillText(this.text, this.canvas.width / 2, this.canvas.height / 2);
+
         this.update();
         this.aniId = window.requestAnimationFrame(() => this.draw());
     }
@@ -94,6 +102,14 @@ class ParticleAnimation {
         // Reinitialize particles when resizing
         this.init();
     }
+}
+
+const colors = ['#5C9EAD', '#C5EDAC', '#EF7B45', '#F6AE2D'];
+let lastColor = null;
+
+function getRandomColor(excludeColor) {
+    const availableColors = colors.filter(color => color !== excludeColor);
+    return availableColors[Math.floor(Math.random() * availableColors.length)];
 }
 
 function updateCanvasSizes() {
@@ -136,8 +152,10 @@ function addTask() {
     tasksContainer.appendChild(taskContainer);
 
     const canvas = taskContainer.querySelector('.particle-canvas');
+    const color = getRandomColor(lastColor); // Get a random color different from the last color
+    lastColor = color; // Update the last color
     if (!canvas._particleAnimation) {
-        canvas._particleAnimation = new ParticleAnimation(canvas);
+        canvas._particleAnimation = new ParticleAnimation(canvas, taskText, color);
     }
 
     updateCanvasSizes();
