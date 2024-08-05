@@ -114,7 +114,7 @@ class ParticleAnimation {
 
     resize() {
         this.canvas.width = (window.innerWidth * 0.9) / document.querySelectorAll('.particle-canvas').length;
-        this.canvas.height = window.innerHeight;
+        this.canvas.height = window.innerHeight * 0.8;
         this.init();
     }
 
@@ -186,16 +186,36 @@ function addTask() {
 
     const canvas = taskContainer.querySelector('.particle-canvas');
     const color = getRandomColor();
+
     if (!canvas._particleAnimation) {
         canvas._particleAnimation = new ParticleAnimation(canvas, taskText, color);
     } else {
         canvas._particleAnimation.setLevel(50);
     }
-
+    const popup = taskContainer.querySelector('.checklist-popup');
+    canvas.addEventListener('click', () => {
+        const isVisible = popup.style.display === 'flex';
+        popup.style.display = isVisible ? 'none' : 'flex';
+        popup.style.height = isVisible ? '0' : 'auto';
+        popup.style.opacity = isVisible ? '0' : '1';
+        if (!isVisible) {
+            popup.querySelector('.checklist-item-text').focus();
+        }
+    });
+    popup.addEventListener('mouseleave', () => {
+        popup.style.opacity = '0';
+        popup.style.height = '0';
+        setTimeout(() => {
+            if (popup.style.opacity === '0') {
+                popup.style.display = 'none';
+            }
+        }, 400);
+    });
     hideTaskInput();
     updateCanvasSizes();
     updateTaskVisibility();
 }
+
 
 function updateChecklistProgress(popup) {
     const checklistItems = popup.querySelectorAll('.checklist-item');

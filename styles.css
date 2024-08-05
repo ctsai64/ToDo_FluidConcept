@@ -87,7 +87,7 @@ body {
     gap: 10px;
     justify-content: center;
     height: 100vh;
-    padding: 0 10px;
+    padding: 20 50px;
     box-sizing: border-box;
 }
 
@@ -98,6 +98,31 @@ body {
     position: relative;
 }
 
+canvas {
+    border: 1px solid #ddd;
+    border-radius: 20px;
+    border-bottom-right-radius: 100px;
+    border-bottom-left-radius: 100px;
+    transition: background-color 0.3s ease;
+    animation: float 3s ease-in-out infinite;
+
+}
+
+canvas:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+}
+
+@keyframes float {
+    0% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-20px); /* Adjust the value to control the height of the float */
+    }
+    100% {
+        transform: translateY(0);
+    }
+}
 .checklist-item-delete {
     position: absolute;
     right: 5px;
@@ -119,13 +144,8 @@ body {
     background-color: #f0f0f0;
 }
 
-canvas {
-    border: 1px solid #ddd;
-    border-radius: 50px;
-}
-
 .checklist-popup {
-    display: flex;
+    display: none;
     flex-direction: column;
     gap: 10px;
     padding: 10px;
@@ -144,12 +164,6 @@ canvas {
     height: 0;
     opacity: 0;
     border: none;
-}
-
-.task-container:hover .checklist-popup {
-    display: flex;
-    height: auto;
-    opacity: 1;
 }
 
 .checklist-input-container {
