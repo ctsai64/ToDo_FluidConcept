@@ -160,6 +160,22 @@ function hideTaskInput() {
     isTaskInputFocused = false;
 }
 
+function saveTasks() {
+    const tasks = [];
+    document.querySelectorAll('.task-container').forEach(taskContainer => {
+        const taskText = taskContainer.querySelector('.particle-canvas')._particleAnimation.text;
+        const checklistItems = [];
+        taskContainer.querySelectorAll('.checklist-item').forEach(item => {
+            const text = item.querySelector('label').textContent.trim();
+            const checked = item.querySelector('input').checked;
+            checklistItems.push({ text, checked });
+        });
+        tasks.push({ taskText, checklistItems });
+    });
+    localStorage.setItem('tasks', JSON.stringify(tasks));
+}
+
+
 function addTask() {
     const taskInput = document.getElementById('taskInput');
     const taskText = taskInput.value.trim();
@@ -192,6 +208,7 @@ function addTask() {
     } else {
         canvas._particleAnimation.setLevel(50);
     }
+
     const popup = taskContainer.querySelector('.checklist-popup');
     canvas.addEventListener('click', () => {
         const isVisible = popup.style.display === 'flex';
@@ -211,11 +228,100 @@ function addTask() {
             }
         }, 400);
     });
+
     hideTaskInput();
     updateCanvasSizes();
     updateTaskVisibility();
+    saveTasks();
 }
 
+function loadTasks() {
+    const savedTasks = JSON.parse(localStorage.getItem('tasks')) || [];
+    savedTasks.forEach(task => {
+        const taskContainer = document.createElement('div');
+        taskContainer.className = 'task-container';
+        taskContainer.innerHTML = `
+            <button class="btn-circle delete-task-btn" onclick="deleteTask(this)">x</button>
+            <canvas class="particle-canvas"></canvas>
+            <div class="checklist-popup">
+                <div class="checklist-input-container">
+                    <input type="text" class="checklist-item-text" placeholder="Enter checklist item text">
+                    <button class="add-checklist-item" onclick="addChecklistItem(this)">+</button>
+                </div>
+                <div class="checklist">
+                    <div class="checklist-items"></div>
+                    <div class="checklist-progress">0%</div>
+                </div>
+            </div>
+        `;
+
+        // Set task text and initialize particle animation
+        const canvas = taskContainer.querySelector('.particle-canvas');
+        const color = getRandomColor(); // Ensure this is defined somewhere
+        const particleAnimation = new ParticleAnimation(canvas, task.taskText, color);
+        canvas._particleAnimation = particleAnimation;
+
+        // Add event listener for showing/hiding the checklist popup
+        const checklistPopup = taskContainer.querySelector('.checklist-popup');
+        canvas.addEventListener('click', () => {
+            const isVisible = checklistPopup.style.display === 'flex';
+            checklistPopup.style.display = isVisible ? 'none' : 'flex';
+            checklistPopup.style.height = isVisible ? '0' : 'auto';
+            checklistPopup.style.opacity = isVisible ? '0' : '1';
+            if (!isVisible) {
+                checklistPopup.querySelector('.checklist-item-text').focus();
+            }
+        });
+
+        checklistPopup.addEventListener('mouseleave', () => {
+            checklistPopup.style.opacity = '0';
+            checklistPopup.style.height = '0';
+            setTimeout(() => {
+                if (checklistPopup.style.opacity === '0') {
+                    checklistPopup.style.display = 'none';
+                }
+            }, 400);
+        });
+
+        // Handle checklist items
+        const checklistItemsContainer = taskContainer.querySelector('.checklist-items');
+        task.checklistItems.forEach(item => {
+            const itemContainer = document.createElement('div');
+            itemContainer.className = 'checklist-item';
+
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.checked = item.checked;
+
+            const label = document.createElement('label');
+            label.textContent = item.text;
+
+            const deleteButton = document.createElement('button');
+            deleteButton.className = 'checklist-item-delete';
+            deleteButton.textContent = 'x';
+            deleteButton.onclick = () => {
+                itemContainer.remove();
+                updateChecklistProgress(checklistPopup);
+                saveTasks(); // Save tasks after removing a checklist item
+            };
+
+            itemContainer.appendChild(checkbox);
+            itemContainer.appendChild(label);
+            label.appendChild(deleteButton);
+            checklistItemsContainer.appendChild(itemContainer);
+
+            checkbox.addEventListener('change', () => {
+                updateChecklistProgress(checklistPopup);
+                saveTasks(); // Save tasks after updating a checklist item
+            });
+        });
+
+        // Add the task container to the DOM
+        document.getElementById('tasksContainer').appendChild(taskContainer);
+    });
+
+    updateTaskVisibility();
+}
 
 function updateChecklistProgress(popup) {
     const checklistItems = popup.querySelectorAll('.checklist-item');
@@ -252,8 +358,9 @@ function addChecklistItem(button) {
     deleteButton.onclick = () => {
         itemContainer.remove();
         updateChecklistProgress(popup);
+        saveTasks(); // Save tasks after removing a checklist item
     };
-    
+
     itemContainer.appendChild(checkbox);
     itemContainer.appendChild(label);
     label.appendChild(deleteButton);
@@ -262,7 +369,10 @@ function addChecklistItem(button) {
     updateChecklistProgress(popup);
     checkbox.addEventListener('change', () => {
         updateChecklistProgress(popup);
+        saveTasks(); // Save tasks after updating a checklist item
     });
+
+    saveTasks(); // Save tasks after adding a checklist item
 }
 
 function updateCanvasSizes() {
@@ -276,7 +386,7 @@ function updateCanvasSizes() {
 function deleteTask(button) {
     const taskContainer = button.closest('.task-container');
     taskContainer.remove();
-    updateCanvasSizes();
+    saveTasks(); // Save tasks after removing a task
     updateTaskVisibility();
 }
 
@@ -291,7 +401,9 @@ function updateTaskVisibility() {
     const tasksContainer = document.getElementById('tasksContainer');
     const noTasksText = document.getElementById('noTasksText');
     noTasksText.style.display = tasksContainer.children.length === 0 ? 'inline-block' : 'none';
+    saveTasks();
 }
+
 
 document.addEventListener('mousedown', handleClickOutside);
 document.getElementById('taskInput').addEventListener('blur', () => {
@@ -317,6 +429,8 @@ document.addEventListener('keypress', function(event) {
 });
 window.addEventListener('resize', updateCanvasSizes);
 window.addEventListener('load', () => {
+    loadTasks();
     updateCanvasSizes();
     updateTaskVisibility();
 });
+
