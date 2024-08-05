@@ -16,6 +16,18 @@ body {
     text-align: center;
 }
 
+#noTasksText {
+    font-weight: bold;
+    max-width: 600px;
+    margin: 0 auto;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    height: 100%;
+    width: 100%;
+}
+
 #taskInput {
     padding: 10px;
     font-size: 16px;

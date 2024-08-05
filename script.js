@@ -194,6 +194,7 @@ function addTask() {
 
     hideTaskInput();
     updateCanvasSizes();
+    updateTaskVisibility();
 }
 
 function updateChecklistProgress(popup) {
@@ -256,15 +257,20 @@ function deleteTask(button) {
     const taskContainer = button.closest('.task-container');
     taskContainer.remove();
     updateCanvasSizes();
+    updateTaskVisibility();
 }
-
-let isTaskInputFocused = false;
 
 function handleClickOutside(event) {
     const taskInput = document.getElementById('taskInput');
-    if (!taskInput.contains(event.target) && isTaskInputFocused) {
+    if (!taskInput.contains(event.target) && event.target.id !== 'addTaskBtn') {
         hideTaskInput();
     }
+}
+
+function updateTaskVisibility() {
+    const tasksContainer = document.getElementById('tasksContainer');
+    const noTasksText = document.getElementById('noTasksText');
+    noTasksText.style.display = tasksContainer.children.length === 0 ? 'inline-block' : 'none';
 }
 
 document.addEventListener('mousedown', handleClickOutside);
@@ -290,4 +296,7 @@ document.addEventListener('keypress', function(event) {
     }
 });
 window.addEventListener('resize', updateCanvasSizes);
-window.addEventListener('load', updateCanvasSizes);
+window.addEventListener('load', () => {
+    updateCanvasSizes();
+    updateTaskVisibility();
+});
