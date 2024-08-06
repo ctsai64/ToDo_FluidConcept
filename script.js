@@ -57,7 +57,7 @@ class ParticleAnimation {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.ctx.fillStyle = this.color;
         this.ctx.strokeStyle = this.color;
-
+    
         if (this.transitionStartTime) {
             const elapsed = Date.now() - this.transitionStartTime;
             const progress = Math.min(elapsed / this.transitionDuration, 1);
@@ -65,7 +65,7 @@ class ParticleAnimation {
             if (progress === 1) this.transitionStartTime = null;
             this.particles.forEach(particle => particle.update(this.currentLevel));
         }
-
+    
         this.ctx.beginPath();
         this.ctx.moveTo(this.canvas.width, this.canvas.height - (this.canvas.height - 100) * this.currentLevel / 100 - 50);
         this.ctx.lineTo(this.canvas.width, this.canvas.height);
@@ -78,22 +78,27 @@ class ParticleAnimation {
             this.canvas.width, this.canvas.height - (this.canvas.height - 100) * this.currentLevel / 100 - 50
         );
         this.ctx.fill();
-
+    
         this.particles.forEach(particle => {
             this.ctx.beginPath();
             this.ctx.arc(particle.x, particle.y, particle.d, 0, 2 * Math.PI);
             this.fill ? this.ctx.fill() : this.ctx.stroke();
         });
-
+    
+        this.ctx.save();
         this.ctx.font = '20px Arial';
         this.ctx.fillStyle = 'white';
         this.ctx.textAlign = 'center';
         this.ctx.textBaseline = 'middle';
-        this.ctx.fillText(this.text, this.canvas.width / 2, this.canvas.height / 2);
-
+        this.ctx.translate(this.canvas.width / 2, this.canvas.height / 2);
+        this.ctx.rotate(-90 * Math.PI / 180);
+        this.ctx.fillText(this.text, 0, 0);
+        this.ctx.restore();
+    
         this.update();
         this.aniId = window.requestAnimationFrame(() => this.draw());
     }
+    
 
     update() {
         this.c = (this.c + 1) % (100 * Math.PI);
