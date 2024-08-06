@@ -38,6 +38,12 @@ class ParticleAnimation {
         this.text = text;
         this.resize();
         this.init();
+        this.setRandomFloatDuration();
+    }
+
+    setRandomFloatDuration() {
+        const duration = Math.random() * 3 + 2;
+        this.canvas.style.animationDuration = `${duration}s`;
     }
 
     init() {
@@ -100,7 +106,7 @@ class ParticleAnimation {
     }
 
     resize() {
-        this.canvas.width = (window.innerWidth * 0.9) / document.querySelectorAll('.particle-canvas').length;
+        this.canvas.width = (window.innerWidth * 0.7) / document.querySelectorAll('.particle-canvas').length;
         this.canvas.height = window.innerHeight * 0.8;
         this.init();
     }
@@ -164,7 +170,7 @@ function addTask() {
     const taskContainer = document.createElement('div');
     taskContainer.className = 'task-container';
     taskContainer.innerHTML = `
-        <button class="btn-circle delete-task-btn" style="display: none;">x</button>
+        <button class="btn-circle delete-task-btn">x</button>
         <canvas class="particle-canvas"></canvas>
         <div class="checklist-popup">
             <div class="checklist-input-container">
@@ -181,10 +187,12 @@ function addTask() {
 
     const canvas = taskContainer.querySelector('.particle-canvas');
     const color = getRandomColor();
-    canvas._particleAnimation = canvas._particleAnimation || new ParticleAnimation(canvas, taskText, color);
+    canvas._particleAnimation = new ParticleAnimation(canvas, taskText, color);
     canvas._particleAnimation.setLevel(50);
 
     const deleteBtn = taskContainer.querySelector('.delete-task-btn');
+    deleteBtn.addEventListener('click', () => deleteTask(deleteBtn));
+
     canvas.addEventListener('click', (event) => {
         event.stopPropagation();
         const isVisible = deleteBtn.style.display === 'block';
@@ -210,7 +218,7 @@ function loadTasks() {
         const taskContainer = document.createElement('div');
         taskContainer.className = 'task-container';
         taskContainer.innerHTML = `
-            <button class="btn-circle delete-task-btn" style="display: none;">x</button>
+            <button class="btn-circle delete-task-btn">x</button>
             <canvas class="particle-canvas"></canvas>
             <div class="checklist-popup">
                 <div class="checklist-input-container">
@@ -229,6 +237,8 @@ function loadTasks() {
         canvas._particleAnimation = particleAnimation;
 
         const deleteBtn = taskContainer.querySelector('.delete-task-btn');
+        deleteBtn.addEventListener('click', () => deleteTask(deleteBtn));
+
         canvas.addEventListener('click', (event) => {
             event.stopPropagation();
             const isVisible = deleteBtn.style.display === 'block';
@@ -335,7 +345,7 @@ function deleteTask(button) {
 }
 
 function handleClickOutside(event) {
-    if (!event.target.closest('.particle-canvas') && !event.target.closest('.checklist-popup')) {
+    if (!event.target.closest('.particle-canvas') && !event.target.closest('.checklist-popup') && !event.target.closest('.delete-task-btn')) {
         hideAllPopups();
         document.querySelectorAll('.delete-task-btn').forEach(btn => btn.style.display = 'none');
     }
