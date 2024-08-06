@@ -164,7 +164,7 @@ function addTask() {
     const taskContainer = document.createElement('div');
     taskContainer.className = 'task-container';
     taskContainer.innerHTML = `
-        <button class="btn-circle delete-task-btn" onclick="deleteTask(this)">x</button>
+        <button class="btn-circle delete-task-btn" style="display: none;">x</button>
         <canvas class="particle-canvas"></canvas>
         <div class="checklist-popup">
             <div class="checklist-input-container">
@@ -184,23 +184,21 @@ function addTask() {
     canvas._particleAnimation = canvas._particleAnimation || new ParticleAnimation(canvas, taskText, color);
     canvas._particleAnimation.setLevel(50);
 
-    const popup = taskContainer.querySelector('.checklist-popup');
-    canvas.addEventListener('click', () => {
-        const isVisible = popup.style.display === 'flex';
-        popup.style.display = isVisible ? 'none' : 'flex';
-        popup.style.height = isVisible ? '0' : 'auto';
-        popup.style.opacity = isVisible ? '0' : '1';
-        if (!isVisible) popup.querySelector('.checklist-item-text').focus();
-    });
-    popup.addEventListener('mouseleave', () => {
-        popup.style.opacity = '0';
-        popup.style.height = '0';
-        setTimeout(() => {
-            if (popup.style.opacity === '0') popup.style.display = 'none';
-        }, 400);
+    const deleteBtn = taskContainer.querySelector('.delete-task-btn');
+    canvas.addEventListener('click', (event) => {
+        event.stopPropagation();
+        const isVisible = deleteBtn.style.display === 'block';
+        hideAllPopups();
+        if (!isVisible) {
+            deleteBtn.style.display = 'block';
+            taskContainer.querySelector('.checklist-popup').style.display = 'flex';
+            taskContainer.querySelector('.checklist-popup').style.height = 'auto';
+            taskContainer.querySelector('.checklist-popup').style.opacity = '1';
+            taskContainer.querySelector('.checklist-popup .checklist-item-text').focus();
+        }
     });
 
-    hideTaskInput();
+    hideAllPopups();
     updateCanvasSizes();
     updateTaskVisibility();
     saveTasks();
@@ -212,7 +210,7 @@ function loadTasks() {
         const taskContainer = document.createElement('div');
         taskContainer.className = 'task-container';
         taskContainer.innerHTML = `
-            <button class="btn-circle delete-task-btn" onclick="deleteTask(this)">x</button>
+            <button class="btn-circle delete-task-btn" style="display: none;">x</button>
             <canvas class="particle-canvas"></canvas>
             <div class="checklist-popup">
                 <div class="checklist-input-container">
@@ -230,23 +228,21 @@ function loadTasks() {
         const particleAnimation = new ParticleAnimation(canvas, task.taskText, color);
         canvas._particleAnimation = particleAnimation;
 
+        const deleteBtn = taskContainer.querySelector('.delete-task-btn');
+        canvas.addEventListener('click', (event) => {
+            event.stopPropagation();
+            const isVisible = deleteBtn.style.display === 'block';
+            hideAllPopups();
+            if (!isVisible) {
+                deleteBtn.style.display = 'block';
+                taskContainer.querySelector('.checklist-popup').style.display = 'flex';
+                taskContainer.querySelector('.checklist-popup').style.height = 'auto';
+                taskContainer.querySelector('.checklist-popup').style.opacity = '1';
+                taskContainer.querySelector('.checklist-popup .checklist-item-text').focus();
+            }
+        });
+
         const checklistPopup = taskContainer.querySelector('.checklist-popup');
-        canvas.addEventListener('click', () => {
-            const isVisible = checklistPopup.style.display === 'flex';
-            checklistPopup.style.display = isVisible ? 'none' : 'flex';
-            checklistPopup.style.height = isVisible ? '0' : 'auto';
-            checklistPopup.style.opacity = isVisible ? '0' : '1';
-            if (!isVisible) checklistPopup.querySelector('.checklist-item-text').focus();
-        });
-
-        checklistPopup.addEventListener('mouseleave', () => {
-            checklistPopup.style.opacity = '0';
-            checklistPopup.style.height = '0';
-            setTimeout(() => {
-                if (checklistPopup.style.opacity === '0') checklistPopup.style.display = 'none';
-            }, 400);
-        });
-
         const checklistItemsContainer = taskContainer.querySelector('.checklist-items');
         task.checklistItems.forEach(item => {
             const itemContainer = document.createElement('div');
@@ -274,6 +270,7 @@ function loadTasks() {
         });
 
         document.getElementById('tasksContainer').appendChild(taskContainer);
+        updateChecklistProgress(checklistPopup);
     });
 
     updateTaskVisibility();
@@ -338,9 +335,20 @@ function deleteTask(button) {
 }
 
 function handleClickOutside(event) {
-    if (!document.getElementById('taskInput').contains(event.target) && event.target.id !== 'addTaskBtn') {
-        hideTaskInput();
+    if (!event.target.closest('.particle-canvas') && !event.target.closest('.checklist-popup')) {
+        hideAllPopups();
+        document.querySelectorAll('.delete-task-btn').forEach(btn => btn.style.display = 'none');
     }
+}
+
+function hideAllPopups() {
+    document.querySelectorAll('.checklist-popup').forEach(popup => {
+        popup.style.opacity = '0';
+        popup.style.height = '0';
+        setTimeout(() => {
+            if (popup.style.opacity === '0') popup.style.display = 'none';
+        }, 400);
+    });
 }
 
 function updateTaskVisibility() {

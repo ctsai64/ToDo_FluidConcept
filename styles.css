@@ -243,10 +243,6 @@ canvas:hover {
     display: none;
 }
 
-.task-container:hover .delete-task-btn {
-    display: inline-block;
-}
-
 .delete-task-btn:hover {
     transform: translateY(-3px);
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
