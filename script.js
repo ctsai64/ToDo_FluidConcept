@@ -224,7 +224,7 @@ function addTask() {
                 <input type="text" class="task-name-input" placeholder="Task name">
             </div>
             <div class="checklist-input-container">
-                <input type="text" class="checklist-item-text" placeholder="Enter checklist item text">
+                <input type="text" class="checklist-item-text" placeholder="Enter checklist item">
                 <button class="add-checklist-item" onclick="addChecklistItem(this)">+</button>
             </div>
             <div class="checklist">
@@ -562,10 +562,12 @@ function changeTaskColor(colorPicker, newColor) {
     // Update color picker selection
     colorPicker.querySelectorAll('.color-circle').forEach(circle => {
         circle.classList.remove('selected');
-        if (circle.style.backgroundColor === newColor) {
-            circle.classList.add('selected');
-        }
     });
+    const selectedColorCircle = Array.from(colorPicker.querySelectorAll('.color-circle'))
+        .find(circle => circle.style.backgroundColor === newColor);
+    if (selectedColorCircle) {
+        selectedColorCircle.classList.add('selected');
+    }
 
     // Update color in storage
     updateTaskColorInStorage(canvas.dataset.taskId, newColor);
