@@ -67,6 +67,10 @@ class ParticleAnimation {
             taskNameInput.style.backgroundColor = this.color;
             taskNameInput.classList.add('centered');
             taskNameInput.focus();
+
+            // Create color picker
+            const colorPicker = popup.querySelector('.color-picker');
+            createColorPicker(colorPicker, this.color);
         } else {
             popup.style.opacity = '0';
             popup.style.height = '0';
@@ -227,6 +231,7 @@ function addTask() {
                 <div class="checklist-items"></div>
                 <div class="checklist-progress">0%</div>
             </div>
+            <div class="color-picker"></div>
         </div>
         <div class="edit-popup">
             <input type="text" class="edit-input" value="${taskText}">
@@ -300,6 +305,7 @@ function loadTasks() {
                     <div class="checklist-items"></div>
                     <div class="checklist-progress">0%</div>
                 </div>
+                <div class="color-picker"></div>
             </div>
             <div class="edit-popup">
                 <input type="text" class="edit-input" value="${task.taskText}">
@@ -525,6 +531,53 @@ function updateTaskVisibility() {
     const noTasksText = document.getElementById('noTasksText');
     noTasksText.style.display = tasksContainer.children.length === 0 ? 'inline-block' : 'none';
     saveTasks();
+}
+
+function createColorPicker(container, currentColor) {
+    const colors = [...group1, ...group2];
+    container.innerHTML = '';
+    colors.forEach(color => {
+        const colorCircle = document.createElement('div');
+        colorCircle.className = 'color-circle';
+        colorCircle.style.backgroundColor = color;
+        if (color === currentColor) {
+            colorCircle.classList.add('selected');
+        }
+        colorCircle.addEventListener('click', () => changeTaskColor(container, color));
+        container.appendChild(colorCircle);
+    });
+}
+
+function changeTaskColor(colorPicker, newColor) {
+    const taskContainer = colorPicker.closest('.task-container');
+    const canvas = taskContainer.querySelector('.particle-canvas');
+    const taskNameInput = taskContainer.querySelector('.task-name-input');
+
+    // Update ParticleAnimation color
+    canvas._particleAnimation.color = newColor;
+
+    // Update task name input background color
+    taskNameInput.style.backgroundColor = newColor;
+
+    // Update color picker selection
+    colorPicker.querySelectorAll('.color-circle').forEach(circle => {
+        circle.classList.remove('selected');
+        if (circle.style.backgroundColor === newColor) {
+            circle.classList.add('selected');
+        }
+    });
+
+    // Update color in storage
+    updateTaskColorInStorage(canvas.dataset.taskId, newColor);
+}
+
+function updateTaskColorInStorage(taskId, newColor) {
+    let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+    const taskIndex = tasks.findIndex(task => task.id === taskId);
+    if (taskIndex !== -1) {
+        tasks[taskIndex].color = newColor;
+        localStorage.setItem('tasks', JSON.stringify(tasks));
+    }
 }
 
 document.addEventListener('mousedown', handleClickOutside);

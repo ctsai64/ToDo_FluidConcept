@@ -326,12 +326,12 @@ canvas:hover {
     box-sizing: border-box;
     color: white;
     transition: background-color 0.3s ease, text-align 0.3s ease;
-    text-align: center;
+    text-align: center; /* Center text by default */
 }
 
 .task-name-input:focus {
     color: black;
-    text-align: left;
+    text-align: left; /* Align text to the left when focused */
 }
 
 .task-name-input.centered {
@@ -340,4 +340,30 @@ canvas:hover {
 
 .task-name-input.left-aligned {
     text-align: left;
+}
+
+.color-picker {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 10px;
+    gap: 5px;
+}
+
+.color-circle {
+    width: 25px;
+    height: 25px;
+    border-radius: 5px; /* Rounded corners */
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.color-circle:hover {
+    transform: scale(1.1);
+}
+
+.color-circle.selected {
+    border-color: #fff;
+    box-shadow: 0 0 5px rgba(0,0,0,0.5);
 }
