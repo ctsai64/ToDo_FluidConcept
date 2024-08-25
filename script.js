@@ -217,15 +217,13 @@ function addTask() {
     const color = getRandomColor();
     taskContainer.innerHTML = `
         <canvas class="particle-canvas" data-task-id="${taskId}"></canvas>
-        <button class="btn-circle edit-task-btn" data-task-id="${taskId}">o</button>
-        <button class="btn-circle delete-task-btn" data-task-id="${taskId}">x</button>
         <div class="checklist-popup" style="display: none;">
             <div class="task-name-input-container">
                 <input type="text" class="task-name-input" placeholder="Task name">
             </div>
             <div class="checklist-input-container">
-                <input type="text" class="checklist-item-text" placeholder="Enter checklist item">
-                <button class="add-checklist-item" onclick="addChecklistItem(this)">+</button>
+                <input type="text" class="checklist-item-text" placeholder="Enter checklist item text">
+                <button class="add-checklist-item">+</button>
             </div>
             <div class="checklist">
                 <div class="checklist-items"></div>
@@ -233,10 +231,6 @@ function addTask() {
             </div>
             <div class="color-picker"></div>
             <button class="delete-task-btn-popup">Delete Task</button>
-        </div>
-        <div class="edit-popup">
-            <input type="text" class="edit-input" value="${taskText}">
-            <button class="save-edit-btn">Save</button>
         </div>
     `;
 
@@ -246,11 +240,8 @@ function addTask() {
     canvas._particleAnimation = new ParticleAnimation(canvas, taskText, color);
     canvas._particleAnimation.setLevel(50);
 
-    const deleteBtn = taskContainer.querySelector('.delete-task-btn');
+    const deleteBtn = taskContainer.querySelector('.delete-task-btn-popup');
     deleteBtn.addEventListener('click', () => deleteTask(deleteBtn));
-
-    const editBtn = taskContainer.querySelector('.edit-task-btn');
-    editBtn.addEventListener('click', () => editTask(editBtn));
 
     const taskNameInput = taskContainer.querySelector('.task-name-input');
     taskNameInput.value = taskText;
@@ -277,8 +268,11 @@ function addTask() {
         taskNameInput.classList.add('centered');
     });
 
-    const deleteBtnPopup = taskContainer.querySelector('.delete-task-btn-popup');
-    deleteBtnPopup.addEventListener('click', () => deleteTask(deleteBtnPopup));
+    const addChecklistItemBtn = taskContainer.querySelector('.add-checklist-item');
+    addChecklistItemBtn.addEventListener('click', () => addChecklistItem(addChecklistItemBtn));
+
+    const colorPicker = taskContainer.querySelector('.color-picker');
+    createColorPicker(colorPicker, color);
 
     hideAllPopupsExcept();
     updateCanvasSizes();
@@ -295,15 +289,13 @@ function loadTasks() {
         const color = getRandomColor();
         taskContainer.innerHTML = `
             <canvas class="particle-canvas" data-task-id="${taskId}"></canvas>
-            <button class="btn-circle edit-task-btn" data-task-id="${taskId}">o</button>
-            <button class="btn-circle delete-task-btn" data-task-id="${taskId}">x</button>
             <div class="checklist-popup" style="display: none;">
                 <div class="task-name-input-container">
                     <input type="text" class="task-name-input" placeholder="Task name" value="${task.taskText}">
                 </div>
                 <div class="checklist-input-container">
                     <input type="text" class="checklist-item-text" placeholder="Enter checklist item text">
-                    <button class="add-checklist-item" onclick="addChecklistItem(this)">+</button>
+                    <button class="add-checklist-item">+</button>
                 </div>
                 <div class="checklist">
                     <div class="checklist-items"></div>
@@ -312,20 +304,13 @@ function loadTasks() {
                 <div class="color-picker"></div>
                 <button class="delete-task-btn-popup">Delete Task</button>
             </div>
-            <div class="edit-popup">
-                <input type="text" class="edit-input" value="${task.taskText}">
-                <button class="save-edit-btn">Save</button>
-            </div>
         `;
         const canvas = taskContainer.querySelector('.particle-canvas');
         const particleAnimation = new ParticleAnimation(canvas, task.taskText, color);
         canvas._particleAnimation = particleAnimation;
 
-        const deleteBtn = taskContainer.querySelector('.delete-task-btn');
+        const deleteBtn = taskContainer.querySelector('.delete-task-btn-popup');
         deleteBtn.addEventListener('click', () => deleteTask(deleteBtn));
-
-        const editBtn = taskContainer.querySelector('.edit-task-btn');
-        editBtn.addEventListener('click', () => editTask(editBtn));
 
         const taskNameInput = taskContainer.querySelector('.task-name-input');
         taskNameInput.style.backgroundColor = color;
@@ -350,6 +335,12 @@ function loadTasks() {
             taskNameInput.classList.remove('left-aligned');
             taskNameInput.classList.add('centered');
         });
+
+        const addChecklistItemBtn = taskContainer.querySelector('.add-checklist-item');
+        addChecklistItemBtn.addEventListener('click', () => addChecklistItem(addChecklistItemBtn));
+
+        const colorPicker = taskContainer.querySelector('.color-picker');
+        createColorPicker(colorPicker, color);
 
         const checklistPopup = taskContainer.querySelector('.checklist-popup');
         const checklistItemsContainer = taskContainer.querySelector('.checklist-items');
@@ -377,9 +368,6 @@ function loadTasks() {
                 saveTasks();
             });
         });
-
-        const deleteBtnPopup = taskContainer.querySelector('.delete-task-btn-popup');
-        deleteBtnPopup.addEventListener('click', () => deleteTask(deleteBtnPopup));
 
         document.getElementById('tasksContainer').appendChild(taskContainer);
         updateChecklistProgress(checklistPopup);
@@ -466,49 +454,6 @@ function deleteTask(button) {
     updateTaskVisibility();
 }
 
-function editTask(button) {
-    const taskContainer = button.closest('.task-container');
-    const editPopup = taskContainer.querySelector('.edit-popup');
-    const editInput = editPopup.querySelector('.edit-input');
-    const saveBtn = editPopup.querySelector('.save-edit-btn');
-    const canvas = taskContainer.querySelector('.particle-canvas');
-
-    // Populate the input with the current task name
-    editInput.value = canvas._particleAnimation.text;
-
-    // Toggle the edit popup
-    editPopup.classList.toggle('active');
-
-    // Function to save the edited task
-    const saveEditedTask = () => {
-        const newText = editInput.value.trim();
-        if (newText) {
-            // Update the task text in the ParticleAnimation
-            canvas._particleAnimation.setText(newText);
-            
-            // Update the task in localStorage
-            updateTaskInStorage(canvas.dataset.taskId, newText);
-
-            // Close the edit popup
-            editPopup.classList.remove('active');
-        }
-    };
-
-    // Set up the save button functionality
-    saveBtn.onclick = saveEditedTask;
-
-    // Add event listener for Enter key
-    editInput.addEventListener('keypress', (event) => {
-        if (event.key === 'Enter') {
-            event.preventDefault(); // Prevent default form submission
-            saveEditedTask();
-        }
-    });
-
-    // Focus on the input field
-    editInput.focus();
-}
-
 function updateTaskInStorage(taskId, newText) {
     let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
     const taskIndex = tasks.findIndex(task => task.taskText === taskId);
@@ -520,10 +465,9 @@ function updateTaskInStorage(taskId, newText) {
 
 function handleClickOutside(event) {
     const target = event.target;
-    /*const isInsideTaskContainer = target.closest('.task-container');*/
     const isInsideChecklistPopup = target.closest('.checklist-popup');
 
-    if (!isInsideChecklistPopup){ /*&& !isInsideChecklistPopup) { */
+    if (!isInsideChecklistPopup) {
         hideAllPopups();
     }
 }

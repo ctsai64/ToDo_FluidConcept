@@ -97,36 +97,6 @@ body {
     word-wrap: break-word; 
 }
 
-.delete-task-btn, .edit-task-btn {
-    background-color: transparent;
-    color: #fff;
-    border: 2px solid #fff;
-    border-radius: 100%;
-    width: 20px;
-    height: 20px;
-    font-size: 10px;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.2s;
-    position: absolute;
-    top: 10px;
-    z-index: 15;
-    display: none;
-}
-
-.delete-task-btn {
-    right: 10px;
-}
-
-.edit-task-btn {
-    right: 40px; /* Position it to the left of the delete button */
-}
-
-.task-container:hover .delete-task-btn,
-.task-container:hover .edit-task-btn {
-    display: block;
-}
-
 canvas {
     border: 1px solid #ddd;
     border-radius: 20px;
