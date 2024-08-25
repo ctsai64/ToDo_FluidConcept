@@ -60,6 +60,13 @@ class ParticleAnimation {
                 popup.style.opacity = '1';
                 popup.style.height = 'auto';
             }, 10);
+            
+            // Set the task name in the input and focus on it
+            const taskNameInput = popup.querySelector('.task-name-input');
+            taskNameInput.value = this.text;
+            taskNameInput.style.backgroundColor = this.color;
+            taskNameInput.classList.add('centered');
+            taskNameInput.focus();
         } else {
             popup.style.opacity = '0';
             popup.style.height = '0';
@@ -144,6 +151,11 @@ class ParticleAnimation {
         this.targetLevel = level;
         this.transitionStartTime = Date.now();
     }
+
+    setText(newText) {
+        this.text = newText;
+        this.draw(); // Redraw the canvas with the new text
+    }
 }
 
 const group1 = ['#5C9EAD', '#A4A24A', '#E8D57E'];
@@ -198,10 +210,15 @@ function addTask() {
     const taskContainer = document.createElement('div');
     taskContainer.className = 'task-container';
     const taskId = Date.now();
+    const color = getRandomColor();
     taskContainer.innerHTML = `
-        <button class="btn-circle delete-task-btn" data-task-id="${taskId}">x</button>
         <canvas class="particle-canvas" data-task-id="${taskId}"></canvas>
+        <button class="btn-circle edit-task-btn" data-task-id="${taskId}">o</button>
+        <button class="btn-circle delete-task-btn" data-task-id="${taskId}">x</button>
         <div class="checklist-popup" style="display: none;">
+            <div class="task-name-input-container">
+                <input type="text" class="task-name-input" placeholder="Task name">
+            </div>
             <div class="checklist-input-container">
                 <input type="text" class="checklist-item-text" placeholder="Enter checklist item text">
                 <button class="add-checklist-item" onclick="addChecklistItem(this)">+</button>
@@ -211,26 +228,50 @@ function addTask() {
                 <div class="checklist-progress">0%</div>
             </div>
         </div>
+        <div class="edit-popup">
+            <input type="text" class="edit-input" value="${taskText}">
+            <button class="save-edit-btn">Save</button>
+        </div>
     `;
 
     document.getElementById('tasksContainer').appendChild(taskContainer);
 
     const canvas = taskContainer.querySelector('.particle-canvas');
-    const color = getRandomColor();
     canvas._particleAnimation = new ParticleAnimation(canvas, taskText, color);
     canvas._particleAnimation.setLevel(50);
 
     const deleteBtn = taskContainer.querySelector('.delete-task-btn');
-    canvas.addEventListener('mouseenter', () => {
-        deleteBtn.style.display = 'block';
-    });
-    canvas.addEventListener('mouseleave', () => {
-        deleteBtn.style.display = 'none';
-    });
-
     deleteBtn.addEventListener('click', () => deleteTask(deleteBtn));
 
-    hideAllPopupsExcept(); // Ensure all other popups are hidden
+    const editBtn = taskContainer.querySelector('.edit-task-btn');
+    editBtn.addEventListener('click', () => editTask(editBtn));
+
+    const taskNameInput = taskContainer.querySelector('.task-name-input');
+    taskNameInput.value = taskText;
+    taskNameInput.style.backgroundColor = color;
+    taskNameInput.classList.add('centered');
+
+    taskNameInput.addEventListener('keypress', (event) => {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            saveTaskName(taskNameInput);
+            taskNameInput.blur();
+        }
+    });
+
+    taskNameInput.addEventListener('focus', () => {
+        taskNameInput.style.backgroundColor = 'white';
+        taskNameInput.classList.remove('centered');
+        taskNameInput.classList.add('left-aligned');
+    });
+
+    taskNameInput.addEventListener('blur', () => {
+        taskNameInput.style.backgroundColor = color;
+        taskNameInput.classList.remove('left-aligned');
+        taskNameInput.classList.add('centered');
+    });
+
+    hideAllPopupsExcept();
     updateCanvasSizes();
     updateTaskVisibility();
     saveTasks();
@@ -242,10 +283,15 @@ function loadTasks() {
         const taskContainer = document.createElement('div');
         taskContainer.className = 'task-container';
         const taskId = Date.now();
+        const color = getRandomColor();
         taskContainer.innerHTML = `
-            <button class="btn-circle delete-task-btn" data-task-id="${taskId}">x</button>
             <canvas class="particle-canvas" data-task-id="${taskId}"></canvas>
+            <button class="btn-circle edit-task-btn" data-task-id="${taskId}">o</button>
+            <button class="btn-circle delete-task-btn" data-task-id="${taskId}">x</button>
             <div class="checklist-popup" style="display: none;">
+                <div class="task-name-input-container">
+                    <input type="text" class="task-name-input" placeholder="Task name" value="${task.taskText}">
+                </div>
                 <div class="checklist-input-container">
                     <input type="text" class="checklist-item-text" placeholder="Enter checklist item text">
                     <button class="add-checklist-item" onclick="addChecklistItem(this)">+</button>
@@ -255,21 +301,44 @@ function loadTasks() {
                     <div class="checklist-progress">0%</div>
                 </div>
             </div>
+            <div class="edit-popup">
+                <input type="text" class="edit-input" value="${task.taskText}">
+                <button class="save-edit-btn">Save</button>
+            </div>
         `;
         const canvas = taskContainer.querySelector('.particle-canvas');
-        const color = getRandomColor();
         const particleAnimation = new ParticleAnimation(canvas, task.taskText, color);
         canvas._particleAnimation = particleAnimation;
 
         const deleteBtn = taskContainer.querySelector('.delete-task-btn');
-        canvas.addEventListener('mouseenter', () => {
-            deleteBtn.style.display = 'block';
-        });
-        canvas.addEventListener('mouseleave', () => {
-            deleteBtn.style.display = 'none';
+        deleteBtn.addEventListener('click', () => deleteTask(deleteBtn));
+
+        const editBtn = taskContainer.querySelector('.edit-task-btn');
+        editBtn.addEventListener('click', () => editTask(editBtn));
+
+        const taskNameInput = taskContainer.querySelector('.task-name-input');
+        taskNameInput.style.backgroundColor = color;
+        taskNameInput.classList.add('centered');
+
+        taskNameInput.addEventListener('keypress', (event) => {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                saveTaskName(taskNameInput);
+                taskNameInput.blur();
+            }
         });
 
-        deleteBtn.addEventListener('click', () => deleteTask(deleteBtn));
+        taskNameInput.addEventListener('focus', () => {
+            taskNameInput.style.backgroundColor = 'white';
+            taskNameInput.classList.remove('centered');
+            taskNameInput.classList.add('left-aligned');
+        });
+
+        taskNameInput.addEventListener('blur', () => {
+            taskNameInput.style.backgroundColor = color;
+            taskNameInput.classList.remove('left-aligned');
+            taskNameInput.classList.add('centered');
+        });
 
         const checklistPopup = taskContainer.querySelector('.checklist-popup');
         const checklistItemsContainer = taskContainer.querySelector('.checklist-items');
@@ -303,6 +372,16 @@ function loadTasks() {
     });
 
     updateTaskVisibility();
+}
+
+function saveTaskName(input) {
+    const newText = input.value.trim();
+    if (newText) {
+        const taskContainer = input.closest('.task-container');
+        const canvas = taskContainer.querySelector('.particle-canvas');
+        canvas._particleAnimation.setText(newText);
+        updateTaskInStorage(canvas.dataset.taskId, newText);
+    }
 }
 
 function updateChecklistProgress(popup) {
@@ -363,6 +442,58 @@ function deleteTask(button) {
     updateTaskVisibility();
 }
 
+function editTask(button) {
+    const taskContainer = button.closest('.task-container');
+    const editPopup = taskContainer.querySelector('.edit-popup');
+    const editInput = editPopup.querySelector('.edit-input');
+    const saveBtn = editPopup.querySelector('.save-edit-btn');
+    const canvas = taskContainer.querySelector('.particle-canvas');
+
+    // Populate the input with the current task name
+    editInput.value = canvas._particleAnimation.text;
+
+    // Toggle the edit popup
+    editPopup.classList.toggle('active');
+
+    // Function to save the edited task
+    const saveEditedTask = () => {
+        const newText = editInput.value.trim();
+        if (newText) {
+            // Update the task text in the ParticleAnimation
+            canvas._particleAnimation.setText(newText);
+            
+            // Update the task in localStorage
+            updateTaskInStorage(canvas.dataset.taskId, newText);
+
+            // Close the edit popup
+            editPopup.classList.remove('active');
+        }
+    };
+
+    // Set up the save button functionality
+    saveBtn.onclick = saveEditedTask;
+
+    // Add event listener for Enter key
+    editInput.addEventListener('keypress', (event) => {
+        if (event.key === 'Enter') {
+            event.preventDefault(); // Prevent default form submission
+            saveEditedTask();
+        }
+    });
+
+    // Focus on the input field
+    editInput.focus();
+}
+
+function updateTaskInStorage(taskId, newText) {
+    let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+    const taskIndex = tasks.findIndex(task => task.taskText === taskId);
+    if (taskIndex !== -1) {
+        tasks[taskIndex].taskText = newText;
+        localStorage.setItem('tasks', JSON.stringify(tasks));
+    }
+}
+
 function handleClickOutside(event) {
     const target = event.target;
     /*const isInsideTaskContainer = target.closest('.task-container');*/
@@ -401,7 +532,10 @@ document.getElementById('taskInput').addEventListener('blur', () => {
     if (isTaskInputFocused) hideTaskInput();
 });
 document.getElementById('taskInput').addEventListener('keypress', event => {
-    if (event.key === 'Enter') addTask();
+    if (event.key === 'Enter') {
+        addTask();
+        hideTaskInput();
+    }
 });
 document.getElementById('addTaskBtn').addEventListener('click', showTaskInput);
 document.addEventListener('keypress', event => {
@@ -419,3 +553,39 @@ window.addEventListener('load', () => {
     updateCanvasSizes();
     updateTaskVisibility();
 });
+
+function drawTaskOnCanvas(canvas, text) {
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = canvas._particleAnimation.color;
+    ctx.strokeStyle = canvas._particleAnimation.color;
+
+    ctx.beginPath();
+    ctx.moveTo(canvas.width, canvas.height - (canvas.height - 100) * canvas._particleAnimation.currentLevel / 100 - 50);
+    ctx.lineTo(canvas.width, canvas.height);
+    ctx.lineTo(0, canvas.height);
+    ctx.lineTo(0, canvas.height - (canvas.height - 100) * canvas._particleAnimation.currentLevel / 100 - 50);
+    const temp = 50 * Math.sin(canvas._particleAnimation.c / 50);
+    ctx.bezierCurveTo(
+        (canvas.width / 3), canvas.height - (canvas.height - 100) * canvas._particleAnimation.currentLevel / 100 - 50 - temp,
+        (2 * canvas.width / 3), canvas.height - (canvas.height - 100) * canvas._particleAnimation.currentLevel / 100 - 50 + temp,
+        canvas.width, canvas.height - (canvas.height - 100) * canvas._particleAnimation.currentLevel / 100 - 50
+    );
+    ctx.fill();
+
+    canvas._particleAnimation.particles.forEach(particle => {
+        ctx.beginPath();
+        ctx.arc(particle.x, particle.y, particle.d, 0, 2 * Math.PI);
+        canvas._particleAnimation.fill ? ctx.fill() : ctx.stroke();
+    });
+
+    ctx.save();
+    ctx.font = '20px Arial';
+    ctx.fillStyle = 'white';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.translate(canvas.width / 2, canvas.height / 2);
+    ctx.rotate(-90 * Math.PI / 180);
+    ctx.fillText(text, 0, 0);
+    ctx.restore();
+}
