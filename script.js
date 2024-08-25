@@ -232,6 +232,7 @@ function addTask() {
                 <div class="checklist-progress">0%</div>
             </div>
             <div class="color-picker"></div>
+            <button class="delete-task-btn-popup">Delete Task</button>
         </div>
         <div class="edit-popup">
             <input type="text" class="edit-input" value="${taskText}">
@@ -276,6 +277,9 @@ function addTask() {
         taskNameInput.classList.add('centered');
     });
 
+    const deleteBtnPopup = taskContainer.querySelector('.delete-task-btn-popup');
+    deleteBtnPopup.addEventListener('click', () => deleteTask(deleteBtnPopup));
+
     hideAllPopupsExcept();
     updateCanvasSizes();
     updateTaskVisibility();
@@ -306,6 +310,7 @@ function loadTasks() {
                     <div class="checklist-progress">0%</div>
                 </div>
                 <div class="color-picker"></div>
+                <button class="delete-task-btn-popup">Delete Task</button>
             </div>
             <div class="edit-popup">
                 <input type="text" class="edit-input" value="${task.taskText}">
@@ -372,6 +377,9 @@ function loadTasks() {
                 saveTasks();
             });
         });
+
+        const deleteBtnPopup = taskContainer.querySelector('.delete-task-btn-popup');
+        deleteBtnPopup.addEventListener('click', () => deleteTask(deleteBtnPopup));
 
         document.getElementById('tasksContainer').appendChild(taskContainer);
         updateChecklistProgress(checklistPopup);
@@ -443,8 +451,18 @@ function updateCanvasSizes() {
 }
 
 function deleteTask(button) {
-    button.closest('.task-container').remove();
-    saveTasks();
+    const taskContainer = button.closest('.task-container');
+    const taskId = taskContainer.querySelector('.particle-canvas').dataset.taskId;
+
+    // Remove task from DOM
+    taskContainer.remove();
+
+    // Remove task from localStorage
+    let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+    tasks = tasks.filter(task => task.id !== taskId);
+    localStorage.setItem('tasks', JSON.stringify(tasks));
+
+    // Update task visibility
     updateTaskVisibility();
 }
 
