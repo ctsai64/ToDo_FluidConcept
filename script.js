@@ -286,7 +286,7 @@ function loadTasks() {
         const taskContainer = document.createElement('div');
         taskContainer.className = 'task-container';
         const taskId = Date.now();
-        const color = getRandomColor();
+        const color = task.color || getRandomColor(); // Use saved color if available, otherwise generate a new one
         taskContainer.innerHTML = `
             <canvas class="particle-canvas" data-task-id="${taskId}"></canvas>
             <div class="checklist-popup" style="display: none;">

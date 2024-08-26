@@ -136,6 +136,7 @@ canvas:hover {
     transition: height 0.8s ease, opacity 0.4s ease;
     height: 0;
     opacity: 0;
+    max-height: 80vh; /* Limit height to 80% of viewport height */
 }
 
 .checklist-input-container {
@@ -183,7 +184,7 @@ canvas:hover {
 .checklist-items {
     display: flex;
     flex-direction: column;
-    max-height: auto;
+    max-height: calc(80vh - 200px); /* Adjust based on other elements in the popup */
     overflow-y: auto;
     width: 100%;
     padding: 10px;
