@@ -29,9 +29,28 @@ class Bubble {
         this.element.className = 'bubble';
         this.element.textContent = text;
         
-        // Random position
-        const x = Math.random() * (window.innerWidth - 150);
-        const y = Math.random() * (window.innerHeight - 150);
+        // Random position avoiding center third
+        const centerThirdStartX = window.innerWidth * 2 / 5;
+        const centerThirdEndX = (window.innerWidth * 3) / 5;
+        const centerThirdStartY = window.innerHeight / 3;
+        const centerThirdEndY = (window.innerHeight * 2) /3;
+        
+        // Generate x position in left or right third
+        let x;
+        if (Math.random() < 0.5) {
+            x = Math.random() * (centerThirdStartX - 150); // Left third
+        } else {
+            x = centerThirdEndX + Math.random() * (window.innerWidth - centerThirdEndX - 150); // Right third
+        }
+        
+        // Generate y position in top or bottom third
+        let y;
+        if (Math.random() < 0.5) {
+            y = Math.random() * (centerThirdStartY - 150); // Top third
+        } else {
+            y = centerThirdEndY + Math.random() * (window.innerHeight - centerThirdEndY - 150); // Bottom third
+        }
+        
         this.element.style.left = `${x}px`;
         this.element.style.top = `${y}px`;
         
