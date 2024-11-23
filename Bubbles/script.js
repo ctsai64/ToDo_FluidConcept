@@ -23,6 +23,27 @@ let todos = JSON.parse(localStorage.getItem('todos')) || [];
 function saveTodos() {
     localStorage.setItem('todos', JSON.stringify(todos));
 }
+class Bubble {
+    constructor(text, container) {
+        this.element = document.createElement('div');
+        this.element.className = 'bubble';
+        this.element.textContent = text;
+        
+        // Random position
+        const x = Math.random() * (window.innerWidth - 150);
+        const y = Math.random() * (window.innerHeight - 150);
+        this.element.style.left = `${x}px`;
+        this.element.style.top = `${y}px`;
+        
+        container.appendChild(this.element);
+    }
+}
+// Create bubble container
+const bubblesContainer = document.getElementById('bubblesContainer');
+// Function to create new bubble
+function createBubble(text) {
+    new Bubble(text, bubblesContainer);
+}
 
 function createTodoElement(todo) {
     const li = document.createElement('li');
@@ -32,11 +53,23 @@ function createTodoElement(todo) {
         <span contenteditable="true">${todo.text}</span>
         <button class="delete-todo">×</button>
     `;
+    // Create a bubble for the todo item
+    createBubble(todo.text);
 
     const checkbox = li.querySelector('input');
     checkbox.addEventListener('change', () => {
         todo.completed = checkbox.checked;
         li.classList.toggle('completed');
+        // Find and remove the bubble element with matching text
+        const bubbles = document.querySelectorAll('.bubble');
+        bubbles.forEach(bubble => {
+            if (bubble.textContent === todo.text) {
+                bubble.classList.add('popping');
+                bubble.addEventListener('animationend', () => {
+                    bubble.remove();
+                });
+            }
+        });
         saveTodos();
     });
 
@@ -52,6 +85,16 @@ function createTodoElement(todo) {
 
     const deleteBtn = li.querySelector('.delete-todo');
     deleteBtn.addEventListener('click', () => {
+        // Find and remove the bubble element with matching text
+        const bubbles = document.querySelectorAll('.bubble');
+        bubbles.forEach(bubble => {
+            if (bubble.textContent === todo.text) {
+                bubble.classList.add('popping');
+                bubble.addEventListener('animationend', () => {
+                    bubble.remove();
+                });
+            }
+        });
         todos = todos.filter(t => t !== todo);
         li.remove();
         saveTodos();
