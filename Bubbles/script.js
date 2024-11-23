@@ -29,7 +29,7 @@ function createTodoElement(todo) {
     li.className = 'todo-item' + (todo.completed ? ' completed' : '');
     li.innerHTML = `
         <input type="checkbox" ${todo.completed ? 'checked' : ''}>
-        <span>${todo.text}</span>
+        <span contenteditable="true">${todo.text}</span>
         <button class="delete-todo">×</button>
     `;
 
@@ -38,6 +38,16 @@ function createTodoElement(todo) {
         todo.completed = checkbox.checked;
         li.classList.toggle('completed');
         saveTodos();
+    });
+
+    const span = li.querySelector('span');
+    span.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            span.blur();
+            todo.text = span.textContent;
+            saveTodos();
+        }
     });
 
     const deleteBtn = li.querySelector('.delete-todo');
