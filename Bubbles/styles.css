@@ -6,8 +6,8 @@ body {
 }
 
 .container {
-    width: 100%;
-    height: 100vh;
+    width: 90%;
+    height: 90vh;
     display: flex;
     justify-content: center;
 }
@@ -22,19 +22,13 @@ body {
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-    top: 0;
+    position: absolute;
+    top: 10%;
     left: 50%;
-    transform: translateX(-50%);
+    transform: translate(-50%, -50%);
     z-index: 1000;
     letter-spacing: 0.2rem;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-}
-
-#bubblesContainer {
-    width: 100%;
-    height: 100%;
-    position: relative;
-    overflow: hidden;
 }
 
 #todoContainer {
@@ -187,6 +181,7 @@ body {
     animation: float 3s ease-in-out infinite;
     cursor: pointer;
     transition: transform 0.3s ease;
+    text-align: center;
 }
 .bubble:hover {
     transform: scale(1.1);
