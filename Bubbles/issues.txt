@@ -1,0 +1,3 @@
+- bubbles to avoid overlap with other elements
+- bubble positioning away from edge
+- recreate bubble if unchecked
