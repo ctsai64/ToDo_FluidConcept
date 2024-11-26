@@ -22,19 +22,22 @@ body {
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-    top: 0;
+    position: fixed;
+    top: 10%;
     left: 50%;
     transform: translateX(-50%);
     z-index: 1000;
     letter-spacing: 0.2rem;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    border: green solid 2px;
 }
 
 #bubblesContainer {
-    width: 100%;
-    height: 100%;
-    position: relative;
-    overflow: hidden;
+    position: fixed;
+    border: red solid 3px;
+    top: 25%;
+    width: 90%;
+    height: 70%;
 }
 
 #todoContainer {
@@ -51,6 +54,7 @@ body {
     z-index: 1000;
     width: 80%;
     max-width: 400px;
+    border: blue solid 3px;
 }
 
 #todoContainer h2 {
@@ -174,10 +178,10 @@ body {
     color: #ffffff;
 }
 
-
 .bubble {
     border-radius: 50%;
-    animation: changeShape 5s ease-in-out infinite, float 3s ease-in-out infinite;
+    animation: float 3s ease-in-out infinite;
+    animation-delay: calc(var(--bubble-index) * 0.5s);
     position: absolute;
     padding: 15px 25px;
     background: rgba(255, 255, 255, 0.1);
@@ -191,19 +195,10 @@ body {
     transition: transform 0.3s ease;
 }
 
-@keyframes changeShape {
-    0% { border-radius: 50%; }
-    50% { border-radius: 60%; }
-    100% { border-radius: 50%; }
-}
-
 @keyframes float {
     0% { transform: translateY(0px); }
     50% { transform: translateY(-10px); }
     100% { transform: translateY(0px); }
-}
-.bubble:hover {
-    transform: scale(1.1);
 }
 
 @keyframes pop {
