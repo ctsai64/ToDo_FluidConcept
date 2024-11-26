@@ -29,6 +29,34 @@ class Bubble {
         
         var x = Math.random() * container.offsetWidth;
         var y = Math.random() * container.offsetHeight;
+
+        const todoCont = document.getElementById('todoContainer').style;
+        /*work here! */
+        console.log(todoCont.offsetWidth);
+        while(x > todoCont.left && x < todoCont.left + todoCont.width && y > todoCont.top && y < todoCont.top + todoCont.height){            
+            x = Math.random() * container.offsetWidth;
+            y = Math.random() * container.offsetHeight;
+        }
+
+        const todoBox = document.createElement('div');
+        todoBox.style.position = 'absolute';
+        todoBox.style.left = `${todoCont.left}px`;
+        todoBox.style.top = `${todoCont.top}px`;
+        todoBox.style.width = `${todoCont.width}px`;
+        todoBox.style.height = `${todoCont.height}px`;
+        todoBox.style.border = "blue solid 3px";
+        container.appendChild(todoBox);
+
+        
+        const coordBox = document.createElement('div');
+        coordBox.style.position = 'absolute';
+        coordBox.style.left = `${x}px`;
+        coordBox.style.top = `${y}px`;
+        coordBox.style.width = '10px';
+        coordBox.style.height = '10px';
+        coordBox.style.background = 'red';
+        container.appendChild(coordBox);
+
         
         this.element.style.left = `${x}px`;
         this.element.style.top = `${y}px`;
@@ -39,6 +67,8 @@ class Bubble {
 
 function loadBubbles() {
     const bubbles = JSON.parse(localStorage.getItem('bubbles')) || [];
+    const existingBubbles = document.querySelectorAll('.bubble');
+    existingBubbles.forEach(bubble => bubble.remove());
     bubbles.forEach((bubble) => {
         createBubble(bubble.text, bubble.index);
     });

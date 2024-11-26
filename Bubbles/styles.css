@@ -29,19 +29,18 @@ body {
     z-index: 1000;
     letter-spacing: 0.2rem;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-    border: green solid 2px;
 }
 
 #bubblesContainer {
     position: fixed;
-    border: red solid 3px;
     top: 25%;
     width: 90%;
     height: 70%;
+    border: green solid 3px;
 }
 
 #todoContainer {
-    position: fixed;
+    position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
@@ -54,7 +53,6 @@ body {
     z-index: 1000;
     width: 80%;
     max-width: 400px;
-    border: blue solid 3px;
 }
 
 #todoContainer h2 {
