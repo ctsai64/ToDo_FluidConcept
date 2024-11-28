@@ -26,26 +26,33 @@ class Bubble {
         this.element.className = 'bubble';
         this.element.textContent = text;
         this.element.style.setProperty('--bubble-index', index);
+
+        console.log(container);
         
         var x = Math.random() * container.offsetWidth;
         var y = Math.random() * container.offsetHeight;
 
-        const todoCont = document.getElementById('todoContainer').style;
-        /*work here! */
-        console.log(todoCont.offsetWidth);
-        while(x > todoCont.left && x < todoCont.left + todoCont.width && y > todoCont.top && y < todoCont.top + todoCont.height){            
+        const todoCont = getComputedStyle(document.getElementById('todoContainer'));
+
+        while(x > todoCont.left && x < todoCont.left + todoCont.width + 2 * parseFloat(todoCont.paddingLeft) && y > todoCont.top && y < todoCont.top + todoCont.height + 2 * parseFloat(todoCont.paddingTop)){            
             x = Math.random() * container.offsetWidth;
             y = Math.random() * container.offsetHeight;
         }
 
+        
         const todoBox = document.createElement('div');
         todoBox.style.position = 'absolute';
-        todoBox.style.left = `${todoCont.left}px`;
-        todoBox.style.top = `${todoCont.top}px`;
-        todoBox.style.width = `${todoCont.width}px`;
-        todoBox.style.height = `${todoCont.height}px`;
+        todoBox.style.left = `${todoCont.left}`;
+        todoBox.style.top = `${todoCont.top}`;
+        todoBox.style.width = `calc(${todoCont.width} + 2 * ${todoCont.paddingLeft})`;
+        todoBox.style.height = `calc(${todoCont.height} + 2 * ${todoCont.paddingTop})`;
         todoBox.style.border = "blue solid 3px";
         container.appendChild(todoBox);
+
+        console.log(`left: ${todoCont.left}`);
+        console.log(`top: ${todoCont.top}`);
+        console.log(`width: ${todoCont.width}`);
+        console.log(`height: ${todoCont.height}`);
 
         
         const coordBox = document.createElement('div');
