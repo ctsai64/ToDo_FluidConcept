@@ -36,12 +36,11 @@ body {
     top: 25%;
     width: 90%;
     height: 70%;
-    border: green solid 3px;
 }
 
 #todoContainer {
     position: absolute;
-    top: 25%;
+    top: 10%;
     left: 25%;
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(10px);
@@ -193,9 +192,15 @@ body {
 }
 
 @keyframes float {
-    0% { transform: translateY(0px); }
-    50% { transform: translateY(-10px); }
-    100% { transform: translateY(0px); }
+    0% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-20px);
+    }
+    100% {
+        transform: translateY(0);
+    }
 }
 
 @keyframes pop {

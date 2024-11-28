@@ -26,44 +26,21 @@ class Bubble {
         this.element.className = 'bubble';
         this.element.textContent = text;
         this.element.style.setProperty('--bubble-index', index);
-
-        console.log(container);
         
-        var x = Math.random() * container.offsetWidth;
-        var y = Math.random() * container.offsetHeight;
+        const bubbleWidth = this.element.offsetWidth + 80;
+        const bubbleHeight = this.element.offsetHeight + 80;
+        var x = Math.random() * container.offsetWidth - bubbleWidth;
+        var y = Math.random() * container.offsetHeight - bubbleHeight;
 
         const todoCont = getComputedStyle(document.getElementById('todoContainer'));
 
-        while(x > todoCont.left && x < todoCont.left + todoCont.width + 2 * parseFloat(todoCont.paddingLeft) && y > todoCont.top && y < todoCont.top + todoCont.height + 2 * parseFloat(todoCont.paddingTop)){            
+        while(x > parseFloat(todoCont.left) 
+        && x < parseFloat(todoCont.left) + parseFloat(todoCont.width) + 2 * parseFloat(todoCont.paddingLeft) - bubbleWidth 
+        && y > parseFloat(todoCont.top) 
+        && y < parseFloat(todoCont.top) + parseFloat(todoCont.height) + 2 * parseFloat(todoCont.paddingTop) - bubbleHeight){            
             x = Math.random() * container.offsetWidth;
             y = Math.random() * container.offsetHeight;
         }
-
-        
-        const todoBox = document.createElement('div');
-        todoBox.style.position = 'absolute';
-        todoBox.style.left = `${todoCont.left}`;
-        todoBox.style.top = `${todoCont.top}`;
-        todoBox.style.width = `calc(${todoCont.width} + 2 * ${todoCont.paddingLeft})`;
-        todoBox.style.height = `calc(${todoCont.height} + 2 * ${todoCont.paddingTop})`;
-        todoBox.style.border = "blue solid 3px";
-        container.appendChild(todoBox);
-
-        console.log(`left: ${todoCont.left}`);
-        console.log(`top: ${todoCont.top}`);
-        console.log(`width: ${todoCont.width}`);
-        console.log(`height: ${todoCont.height}`);
-
-        
-        const coordBox = document.createElement('div');
-        coordBox.style.position = 'absolute';
-        coordBox.style.left = `${x}px`;
-        coordBox.style.top = `${y}px`;
-        coordBox.style.width = '10px';
-        coordBox.style.height = '10px';
-        coordBox.style.background = 'red';
-        container.appendChild(coordBox);
-
         
         this.element.style.left = `${x}px`;
         this.element.style.top = `${y}px`;
@@ -72,17 +49,18 @@ class Bubble {
     }
 }
 
+/*
 function loadBubbles() {
     const bubbles = JSON.parse(localStorage.getItem('bubbles')) || [];
     const existingBubbles = document.querySelectorAll('.bubble');
     existingBubbles.forEach(bubble => bubble.remove());
     bubbles.forEach((bubble) => {
-        createBubble(bubble.text, bubble.index);
+        createBubble(bubble.text);
     });
 }
+*/
 
 const bubblesContainer = document.getElementById('bubblesContainer');
-
 
 function createBubble(text) {
     const bubbleIndex = document.querySelectorAll('.bubble').length;
@@ -184,4 +162,4 @@ todos.forEach(todo => {
     document.getElementById('todoList').appendChild(createTodoElement(todo));
 });
 
-window.addEventListener('load', loadBubbles);
+//window.addEventListener('load', loadBubbles);
