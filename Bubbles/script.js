@@ -26,26 +26,41 @@ class Bubble {
         this.element.className = 'bubble';
         this.element.textContent = text;
         this.element.style.setProperty('--bubble-index', index);
+        container.appendChild(this.element);
         
-        const bubbleWidth = this.element.offsetWidth + 80;
-        const bubbleHeight = this.element.offsetHeight + 80;
+        const bubbleWidth = parseFloat(getComputedStyle(this.element).width);
+        const bubbleHeight = parseFloat(getComputedStyle(this.element).height) + 20;
+        const todoCont = getComputedStyle(document.getElementById('todoContainer'));
+
         var x = Math.random() * container.offsetWidth - bubbleWidth;
         var y = Math.random() * container.offsetHeight - bubbleHeight;
 
-        const todoCont = getComputedStyle(document.getElementById('todoContainer'));
-
-        while(x > parseFloat(todoCont.left) 
-        && x < parseFloat(todoCont.left) + parseFloat(todoCont.width) + 2 * parseFloat(todoCont.paddingLeft) - bubbleWidth 
-        && y > parseFloat(todoCont.top) 
-        && y < parseFloat(todoCont.top) + parseFloat(todoCont.height) + 2 * parseFloat(todoCont.paddingTop) - bubbleHeight){            
+        while(x > parseFloat(todoCont.left) - bubbleWidth
+        && x < parseFloat(todoCont.left) + parseFloat(todoCont.width) + 2 * parseFloat(todoCont.paddingRight) + 2 * bubbleWidth 
+        && y > parseFloat(todoCont.top) - bubbleHeight 
+        && y < parseFloat(todoCont.top) + parseFloat(todoCont.height) + 2 * parseFloat(todoCont.paddingBottom) + 3 * bubbleHeight){            
             x = Math.random() * container.offsetWidth;
             y = Math.random() * container.offsetHeight;
         }
+
         
+        const todoContBox = document.createElement('div');
+        todoContBox.id = 'todoContBox'
+        todoContBox.style.position = 'absolute';
+        todoContBox.style.left = `${parseFloat(todoCont.left) - bubbleWidth}px`;
+        todoContBox.style.top = `${parseFloat(todoCont.top) - bubbleHeight}px`;
+        todoContBox.style.width = `${parseFloat(todoCont.width) + 2 * parseFloat(todoCont.paddingRight) + 2 * bubbleWidth}px`;
+        todoContBox.style.height = `${parseFloat(todoCont.height) + 2 * parseFloat(todoCont.paddingBottom) + 3 * bubbleHeight}px`;
+        todoContBox.style.border = '1px solid white';
+        const existingTodoContBox = document.getElementById('todoContBox');
+        if (existingTodoContBox) {
+            existingTodoContBox.remove();
+        }
+        container.appendChild(todoContBox);
+        
+
         this.element.style.left = `${x}px`;
         this.element.style.top = `${y}px`;
-        
-        container.appendChild(this.element);
     }
 }
 
@@ -82,7 +97,6 @@ function createTodoElement(todo) {
     checkbox.addEventListener('change', () => {
         todo.completed = checkbox.checked;
         li.classList.toggle('completed');
-        // Find and remove the bubble element with matching text
         const bubbles = document.querySelectorAll('.bubble');
         bubbles.forEach(bubble => {
             if (bubble.textContent === todo.text) {
@@ -107,7 +121,6 @@ function createTodoElement(todo) {
 
     const deleteBtn = li.querySelector('.delete-todo');
     deleteBtn.addEventListener('click', () => {
-        // Find and remove the bubble element with matching text
         const bubbles = document.querySelectorAll('.bubble');
         bubbles.forEach(bubble => {
             if (bubble.textContent === todo.text) {
@@ -120,6 +133,17 @@ function createTodoElement(todo) {
         todos = todos.filter(t => t !== todo);
         li.remove();
         saveTodos();
+    });
+
+    const todoCont = document.getElementById('todoContainer');
+    const bubbles = document.querySelectorAll('.bubble');
+    bubbles.forEach(bubble => {
+        const bubbleRect = bubble.getBoundingClientRect();
+        const todoContRect = todoCont.getBoundingClientRect();
+        if (bubbleRect.left < todoContRect.right && bubbleRect.right > todoContRect.left && bubbleRect.top < todoContRect.bottom && bubbleRect.bottom > todoContRect.top) {
+            bubble.style.left = `${Math.random() * (document.body.offsetWidth - bubble.offsetWidth)}px`;
+            bubble.style.top = `${Math.random() * (document.body.offsetHeight - bubble.offsetHeight)}px`;
+        }
     });
 
     return li;
@@ -137,7 +161,6 @@ function addTodo(text) {
     saveTodos();
 }
 
-// Initialize todo list
 document.getElementById('addTodo').addEventListener('click', () => {
     const input = document.getElementById('todoInput');
     const text = input.value.trim();
@@ -157,9 +180,4 @@ document.getElementById('todoInput').addEventListener('keypress', (e) => {
     }
 });
 
-// Load existing todos
-todos.forEach(todo => {
-    document.getElementById('todoList').appendChild(createTodoElement(todo));
-});
-
-//window.addEventListener('load', loadBubbles);
+todos.forEach(todo => {document.getElementById('todoList').appendChild(createTodoElement(todo));});
