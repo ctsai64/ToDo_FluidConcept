@@ -44,6 +44,7 @@ class Bubble {
         }
 
         
+        /*
         const todoContBox = document.createElement('div');
         todoContBox.id = 'todoContBox'
         todoContBox.style.position = 'absolute';
@@ -57,7 +58,7 @@ class Bubble {
             existingTodoContBox.remove();
         }
         container.appendChild(todoContBox);
-        
+        */
 
         this.element.style.left = `${x}px`;
         this.element.style.top = `${y}px`;
@@ -140,9 +141,20 @@ function createTodoElement(todo) {
     bubbles.forEach(bubble => {
         const bubbleRect = bubble.getBoundingClientRect();
         const todoContRect = todoCont.getBoundingClientRect();
+        /*working here*/
         if (bubbleRect.left < todoContRect.right && bubbleRect.right > todoContRect.left && bubbleRect.top < todoContRect.bottom && bubbleRect.bottom > todoContRect.top) {
-            bubble.style.left = `${Math.random() * (document.body.offsetWidth - bubble.offsetWidth)}px`;
-            bubble.style.top = `${Math.random() * (document.body.offsetHeight - bubble.offsetHeight)}px`;
+            var newX = Math.random() * (document.body.offsetWidth - bubble.offsetWidth);
+            var newY = Math.random() * (document.body.offsetHeight - bubble.offsetHeight);
+            while(newX > parseFloat(todoCont.left) - bubbleWidth
+                && newX < parseFloat(todoCont.left) + parseFloat(todoCont.width) + 2 * parseFloat(todoCont.paddingRight) + 2 * bubbleWidth 
+                && newY > parseFloat(todoCont.top) - bubbleHeight 
+                && newY < parseFloat(todoCont.top) + parseFloat(todoCont.height) + 2 * parseFloat(todoCont.paddingBottom) + 3 * bubbleHeight){            
+                    newX = Math.random() * container.offsetWidth;
+                    newY = Math.random() * container.offsetHeight;
+                }
+            bubble.style.transition = 'left 0.5s ease, top 0.5s ease';
+            bubble.style.left = `${newX}px`;
+            bubble.style.top = `${newY}px`;
         }
     });
 
